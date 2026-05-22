@@ -8,6 +8,7 @@ import {
   Gauge,
   Layers3,
   Mail,
+  Phone,
   Route,
   ShieldCheck,
   Workflow,
@@ -18,8 +19,11 @@ import { motion } from 'motion/react'
 import { Badge } from './components/ui/badge'
 import { Button } from './components/ui/button'
 
-const mailTo =
-  'mailto:hello@ahzi.tech?subject=AI%20readiness%20sprint'
+const contactEmail = 'welcome@ahzi.tech'
+const contactPhone = '+14702961095'
+const contactPhoneDisplay = '(470) 296-1095'
+const mailTo = `mailto:${contactEmail}?subject=AI%20readiness%20sprint`
+const phoneTo = `tel:${contactPhone}`
 
 const signals = [
   ['Data context', 'Mapped'],
@@ -270,17 +274,34 @@ function App() {
               and a leader who needs proof before production.
             </p>
           </div>
-          <Button className="shrink-0" href={mailTo} size="lg">
-            Email Ahzi
-            <ArrowUpRight aria-hidden="true" className="h-5 w-5" />
-          </Button>
+          <div className="flex w-full flex-col gap-4 sm:w-auto sm:min-w-80">
+            <Button className="w-full justify-center" href={mailTo} size="lg">
+              <Mail aria-hidden="true" className="h-5 w-5" />
+              Email Ahzi
+              <ArrowUpRight aria-hidden="true" className="h-5 w-5" />
+            </Button>
+            <Button className="w-full justify-center" href={phoneTo} size="lg" variant="outline">
+              <Phone aria-hidden="true" className="h-5 w-5" />
+              Call {contactPhoneDisplay}
+            </Button>
+            <div className="grid gap-2 text-sm text-[var(--foreground-muted)]">
+              <a className="transition hover:text-[var(--foreground)]" href={mailTo}>
+                {contactEmail}
+              </a>
+              <a className="transition hover:text-[var(--foreground)]" href={phoneTo}>
+                {contactPhoneDisplay}
+              </a>
+            </div>
+          </div>
         </div>
       </section>
 
       <footer className="border-t border-[var(--line)] px-5 py-8 text-sm text-[var(--foreground-subtle)] sm:px-8">
         <div className="mx-auto flex max-w-7xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <span>Ahzi. CRM AI readiness and delivery acceleration.</span>
-          <span>Independent practice for teams preparing real workflows for agents.</span>
+          <a className="transition hover:text-[var(--foreground)]" href={mailTo}>
+            {contactEmail}
+          </a>
         </div>
       </footer>
     </main>
