@@ -1,6 +1,6 @@
-# Ahzi
+# Ahzi Tech
 
-A React site for Ahzi's CRM AI readiness work.
+A React site for Ahzi's forward-deployed enterprise AI consulting.
 
 ## Stack
 
@@ -20,4 +20,6 @@ npm run build
 
 ## Deployment
 
-The `main` branch deploys to GitHub Pages through the workflow in `.github/workflows/pages.yml`.
+Production is published through the Squarespace account that manages `https://ahzi.tech`.
+
+The `main` branch also deploys a review build through GitHub Pages. Run `npm run build` before either release path; the static output is written to `dist/`.

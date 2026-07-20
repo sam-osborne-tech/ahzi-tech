@@ -11,61 +11,293 @@ import {
   Phone,
   Route,
   ShieldCheck,
+  Sparkles,
   Workflow,
-  Zap,
 } from 'lucide-react'
-import type { CSSProperties } from 'react'
+import { FaAws, FaMicrosoft } from 'react-icons/fa'
+import type { IconType } from 'react-icons'
+import {
+  SiAnthropic,
+  SiGooglegemini,
+  SiMeta,
+  SiMistralai,
+  SiOpenai,
+  SiPerplexity,
+  SiSalesforce,
+} from 'react-icons/si'
+import type { CSSProperties, MouseEvent } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { motion } from 'motion/react'
+import { AgentChat, type ProtectedMailToHandler } from './components/agent-chat'
 import { Badge } from './components/ui/badge'
 import { Button } from './components/ui/button'
+import {
+  footerLinkClass,
+  foregroundHoverClass,
+} from './lib/style-classes'
 
-const contactEmail = 'welcome@ahzi.tech'
+const contactEmailParts = ['admin', 'ahzi.tech'] as const
 const contactPhone = '+14702961095'
 const contactPhoneDisplay = '(470) 296-1095'
-const mailTo = `mailto:${contactEmail}?subject=AI%20readiness%20sprint`
 const phoneTo = `tel:${contactPhone}`
+const trustedContactDelayMs = 900
+const ahziLogoPath = `${import.meta.env.BASE_URL}ahzi-logo.png`
+
+const getContactEmail = () => contactEmailParts.join('@')
+
+const buildMailTo = (subject: string, body?: string) => {
+  const params = new URLSearchParams({ subject })
+
+  if (body) {
+    params.set('body', body)
+  }
+
+  return `mailto:${getContactEmail()}?${params.toString()}`
+}
+
+const openMailTo = (subject = 'AI consulting conversation', body?: string) => {
+  window.location.href = buildMailTo(subject, body)
+}
 
 const signals = [
-  ['Data context', 'Mapped'],
-  ['Agent boundaries', 'Governed'],
-  ['Workflow risk', 'Visible'],
-  ['Launch gate', 'Evidence ready'],
+  ['Mission', 'Locked'],
+  ['Data layer', 'Mapped'],
+  ['Workflow', 'Ready'],
+  ['Launch path', 'Armed'],
 ]
 
-const offers = [
+const audiences = [
   {
-    icon: Route,
-    title: 'Readiness sprint',
-    duration: '2 weeks',
-    text: 'Map the org, data, handoffs, automations, reporting gaps, and launch risks before AI agents enter the workflow.',
+    title: 'Business operators',
+    text: 'Turn a high-value workflow into an AI system that runs in production.',
   },
   {
-    icon: Zap,
-    title: 'Delivery sprint',
-    duration: '4 to 6 weeks',
-    text: 'Fix the CRM foundation, accelerate migration and QA work, and leave the team with proof instead of loose notes.',
+    title: 'Product teams',
+    text: 'Move from a sharp idea to a tested product without losing the business case.',
   },
   {
-    icon: ShieldCheck,
-    title: 'Verification layer',
-    duration: 'Ongoing',
-    text: 'Keep agent behavior, reporting, tests, and rollout evidence aligned as the system changes.',
+    title: 'CRM leaders',
+    text: 'Make customer data, ownership, and workflows ready for intelligent automation.',
+  },
+  {
+    title: 'AI teams',
+    text: 'Add deployment muscle, evaluation discipline, and adoption to the model layer.',
+  },
+]
+
+const stackLayers = [
+  {
+    icon: Sparkles,
+    number: '01',
+    title: 'Opportunity mapping',
+    text: 'Find the workflows where your data, expertise, and operating model create an advantage worth building around.',
+  },
+  {
+    icon: Bot,
+    number: '02',
+    title: 'Custom AI products',
+    text: 'Design and ship useful agents, copilots, internal tools, and customer experiences against real business constraints.',
+  },
+  {
+    icon: Gauge,
+    number: '03',
+    title: 'Model and platform fit',
+    text: 'Evaluate the right models, tools, and architecture with evidence from the work the system must actually perform.',
+  },
+  {
+    icon: Database,
+    number: '04',
+    title: 'Enterprise implementation',
+    text: 'Connect data, CRM, interfaces, controls, and integrations into a secure system your team can operate.',
+  },
+  {
+    icon: Workflow,
+    number: '05',
+    title: 'Activation and iteration',
+    text: 'Redesign the workflow, enable the people using it, measure the result, and keep improving after launch.',
   },
 ]
 
 const sequence = [
-  ['Map', 'Find where the org, data, reporting, and process shape will limit AI work.'],
-  ['Fix', 'Clean the parts that create risk before a pilot turns into production pressure.'],
-  ['Prove', 'Create evidence the team can inspect, reuse, and defend.'],
-  ['Launch', 'Move in contained releases with clear handoffs and rollback points.'],
+  [
+    'Map',
+    'Surface the problems worth solving with AI, then trace the data, knowledge, economics, and workflow that make the opportunity defensible.',
+  ],
+  [
+    'Build',
+    'Embed with the team, work against real systems and constraints, and own the path from prototype through production.',
+  ],
+  [
+    'Activate',
+    'Redesign how people and agents work together, prove the early win, and create the operating rhythm that makes it compound.',
+  ],
 ]
 
-const proof = [
-  { icon: Database, label: 'Data model and field logic traced' },
-  { icon: Workflow, label: 'Automations and handoffs made visible' },
-  { icon: FileCheck2, label: 'Tests and acceptance evidence produced' },
-  { icon: BarChart3, label: 'Reports tied back to operating decisions' },
+const outcomes = [
+  {
+    icon: Sparkles,
+    code: 'P01',
+    title: 'Opportunity map',
+    items: ['Business value', 'Feasibility', 'Deployment path'],
+  },
+  {
+    icon: Bot,
+    code: 'P02',
+    title: 'Production AI workflow',
+    items: ['Working software', 'Human controls', 'System integration'],
+  },
+  {
+    icon: Database,
+    code: 'P03',
+    title: 'Data and CRM foundation',
+    items: ['Trusted context', 'Ownership model', 'Workflow state'],
+  },
+  {
+    icon: BarChart3,
+    code: 'P04',
+    title: 'Evaluation and launch proof',
+    items: ['Quality checks', 'Operating signals', 'Release gates'],
+  },
+  {
+    icon: Workflow,
+    code: 'P05',
+    title: 'Adoption system',
+    items: ['Team enablement', 'Workflow change', 'Iteration loop'],
+  },
 ]
+
+type IntegrationPlatform = {
+  accent: string
+  focus: string
+  initials?: string
+  logo?: IconType
+  name: string
+}
+
+const integrationPlatforms: IntegrationPlatform[] = [
+  {
+    name: 'OpenAI',
+    focus: 'Assistants, agents, and workflow copilots',
+    logo: SiOpenai,
+    accent: '#74aa9c',
+  },
+  {
+    name: 'Anthropic',
+    focus: 'Claude workflows, review loops, and knowledge work',
+    logo: SiAnthropic,
+    accent: '#d4b896',
+  },
+  {
+    name: 'Salesforce Agentforce',
+    focus: 'CRM agents, service handoffs, and customer data',
+    logo: SiSalesforce,
+    accent: '#00a1e0',
+  },
+  {
+    name: 'Google Gemini',
+    focus: 'Workspace, search, and customer operations',
+    logo: SiGooglegemini,
+    accent: '#8e75b2',
+  },
+  {
+    name: 'Microsoft Copilot',
+    focus: 'Microsoft 365, Teams, and business process support',
+    logo: FaMicrosoft,
+    accent: '#f25022',
+  },
+  {
+    name: 'AWS Bedrock',
+    focus: 'Model access, data boundaries, and cloud deployment',
+    logo: FaAws,
+    accent: '#ff9900',
+  },
+  {
+    name: 'Meta Llama',
+    focus: 'Open model strategy and private deployment paths',
+    logo: SiMeta,
+    accent: '#0668e1',
+  },
+  {
+    name: 'Mistral AI',
+    focus: 'Lightweight model workflows and private use cases',
+    logo: SiMistralai,
+    accent: '#fa520f',
+  },
+  {
+    name: 'Cohere',
+    focus: 'Search, retrieval, and enterprise knowledge flows',
+    initials: 'co',
+    accent: '#39594d',
+  },
+  {
+    name: 'Perplexity',
+    focus: 'Research workflows and answer surfaces',
+    logo: SiPerplexity,
+    accent: '#20b8a7',
+  },
+]
+
+function PlatformLogo({ accent, initials, logo: Logo, name }: IntegrationPlatform) {
+  return (
+    <span
+      className="grid h-12 w-12 shrink-0 place-items-center rounded-md border bg-[rgb(255_255_255_/_92%)] text-[var(--ink)] shadow-[0_18px_32px_rgb(0_0_0_/_24%)]"
+      data-platform-logo={name}
+      style={{ borderColor: accent } as CSSProperties}
+    >
+      {Logo ? (
+        <Logo aria-label={`${name} logo`} className="h-7 w-7" role="img" />
+      ) : (
+        <span
+          aria-label={`${name} wordmark`}
+          className="text-base font-semibold lowercase leading-none tracking-normal"
+          role="img"
+        >
+          {initials}
+        </span>
+      )}
+    </span>
+  )
+}
+
+function AhziWordmark() {
+  return (
+    <span className="inline-flex items-center gap-2.5">
+      <span className="grid h-9 w-9 place-items-center rounded-md border border-[rgb(255_176_136_/_42%)] bg-[rgb(255_176_136_/_12%)] text-[var(--accent-muted)] shadow-[0_10px_30px_rgb(0_0_0_/_22%)]">
+        <svg
+          aria-hidden="true"
+          className="h-6 w-6"
+          fill="none"
+          viewBox="0 0 32 32"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M7 25 14.5 7h3L25 25"
+            stroke="currentColor"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="3.25"
+          />
+          <path
+            d="M11 19h10"
+            stroke="currentColor"
+            strokeLinecap="round"
+            strokeWidth="3.25"
+          />
+          <path
+            d="M16 7v-3"
+            stroke="currentColor"
+            strokeLinecap="round"
+            strokeWidth="2.25"
+          />
+          <circle cx="16" cy="4" fill="currentColor" r="2" />
+        </svg>
+      </span>
+      <span className="text-base font-semibold leading-none text-[var(--foreground)]">
+        Ahzi
+      </span>
+    </span>
+  )
+}
 
 function SignalField() {
   return (
@@ -98,159 +330,411 @@ function SignalField() {
   )
 }
 
-function App() {
+function HeroSignals() {
   return (
-    <main className="min-h-screen overflow-hidden bg-[var(--background)] text-[var(--foreground)]">
-      <header className="fixed inset-x-0 top-0 z-50 border-b border-[var(--line)] bg-[var(--background-glass)] backdrop-blur-xl">
+    <div
+      aria-label="AI consulting readiness signals"
+      className="mt-8 grid max-w-2xl gap-2 sm:grid-cols-2 lg:hidden"
+    >
+      {signals.map(([label, value]) => (
+        <div
+          className="flex min-h-14 items-center justify-between gap-3 rounded-md border border-[var(--line)] bg-[rgb(7_11_16_/_70%)] px-4 py-3 backdrop-blur"
+          key={label}
+        >
+          <span className="text-sm text-[var(--foreground-muted)]">{label}</span>
+          <span className="text-sm font-semibold text-[var(--accent-muted)]">{value}</span>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function ArcadeHeroCard() {
+  return (
+    <div className="arcade-cartridge hidden lg:block">
+      <div className="arcade-cartridge__hud">
+        <span>PLAYER 1</span>
+        <span>AI MODE</span>
+      </div>
+      <div className="arcade-cartridge__screen">
+        <img alt="Ahzi logo" className="arcade-cartridge__logo" src={ahziLogoPath} />
+        <div aria-hidden="true" className="arcade-cartridge__scanline" />
+      </div>
+      <div className="arcade-cartridge__status">
+        <span>
+          <strong>01</strong>
+          MAP
+        </span>
+        <span>
+          <strong>02</strong>
+          BUILD
+        </span>
+        <span>
+          <strong>03</strong>
+          ACTIVATE
+        </span>
+      </div>
+      <div className="arcade-cartridge__prompt">
+        <span aria-hidden="true">▶</span>
+        PRESS START TO SHIP
+      </div>
+    </div>
+  )
+}
+
+function App() {
+  const [isAgentOpen, setIsAgentOpen] = useState(false)
+  const [contactNotice, setContactNotice] = useState('')
+  const humanInteractionRef = useRef(false)
+  const pageReadyAtRef = useRef(0)
+  const restoreFocusRef = useRef<HTMLElement | null>(null)
+
+  useEffect(() => {
+    pageReadyAtRef.current = window.performance.now()
+
+    const markHumanInteraction = (event: Event) => {
+      if (!event.isTrusted) return
+
+      humanInteractionRef.current = true
+    }
+
+    window.addEventListener('pointerdown', markHumanInteraction, { passive: true })
+    window.addEventListener('keydown', markHumanInteraction)
+
+    return () => {
+      window.removeEventListener('pointerdown', markHumanInteraction)
+      window.removeEventListener('keydown', markHumanInteraction)
+    }
+  }, [])
+
+  useEffect(() => {
+    let animationFrameId: number | null = null
+    let timeoutId: number | null = null
+    const previousScrollRestoration = window.history.scrollRestoration
+
+    window.history.scrollRestoration = 'manual'
+
+    const getHeaderOffset = () => {
+      const header = document.querySelector('header')
+
+      return (header?.getBoundingClientRect().height ?? 0) + 16
+    }
+
+    const scrollCurrentHashIntoView = () => {
+      const targetId = window.location.hash.slice(1)
+
+      if (targetId) {
+        const target = document.getElementById(targetId)
+
+        if (!target) return
+
+        window.scrollTo({
+          top: Math.max(target.getBoundingClientRect().top + window.scrollY - getHeaderOffset(), 0),
+          behavior: 'auto',
+        })
+      }
+    }
+
+    const scrollToHashTarget = () => {
+      if (animationFrameId !== null) {
+        window.cancelAnimationFrame(animationFrameId)
+      }
+
+      if (timeoutId !== null) {
+        window.clearTimeout(timeoutId)
+      }
+
+      animationFrameId = window.requestAnimationFrame(() => {
+        scrollCurrentHashIntoView()
+        animationFrameId = null
+      })
+
+      timeoutId = window.setTimeout(() => {
+        scrollCurrentHashIntoView()
+        timeoutId = null
+      }, 120)
+    }
+
+    scrollToHashTarget()
+    window.addEventListener('hashchange', scrollToHashTarget)
+
+    return () => {
+      window.removeEventListener('hashchange', scrollToHashTarget)
+
+      if (animationFrameId !== null) {
+        window.cancelAnimationFrame(animationFrameId)
+      }
+
+      if (timeoutId !== null) {
+        window.clearTimeout(timeoutId)
+      }
+
+      window.history.scrollRestoration = previousScrollRestoration
+    }
+  }, [])
+
+  const openAgent = (event: MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault()
+    restoreFocusRef.current = event.currentTarget
+    setIsAgentOpen(true)
+  }
+
+  const openProtectedMailTo = useCallback<ProtectedMailToHandler>((event, subject, body) => {
+    event.preventDefault()
+
+    const pageHasSettled =
+      window.performance.now() - pageReadyAtRef.current >= trustedContactDelayMs
+    const hasTrustedClick = event.nativeEvent.isTrusted && humanInteractionRef.current
+
+    if (!hasTrustedClick || !pageHasSettled) {
+      setContactNotice('Give the page a moment, then use the contact button again.')
+      return
+    }
+
+    setContactNotice('')
+    openMailTo(subject, body)
+  }, [])
+
+  const openEmail = (event: MouseEvent<HTMLAnchorElement>) => {
+    openProtectedMailTo(event)
+  }
+
+  return (
+    <main className="arcade-shell min-h-screen overflow-hidden bg-[var(--background)] text-[var(--foreground)]">
+      <a className="skip-link" href="#top">
+        Skip to main content
+      </a>
+      <header className="arcade-header fixed inset-x-0 top-0 z-50 border-b border-[var(--line)] bg-[var(--background-glass)] backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 sm:px-8">
           <a className="flex items-center gap-3" href="#top" aria-label="Ahzi home">
-            <img className="h-9 w-9 rounded-md" src="./ahzi-logo.png" alt="" />
-            <span className="text-sm font-semibold text-[var(--foreground)]">
-              AHZI
-            </span>
+            <AhziWordmark />
           </a>
           <nav className="hidden items-center gap-6 text-sm text-[var(--foreground-muted)] md:flex">
-            <a className="hover:text-[var(--foreground)]" href="#work">
-              Work
+            <a className={foregroundHoverClass} href="#benefits">
+              Missions
             </a>
-            <a className="hover:text-[var(--foreground)]" href="#offers">
-              Offers
+            <a className={foregroundHoverClass} href="#how">
+              Campaign
             </a>
-            <a className="hover:text-[var(--foreground)]" href="#contact">
+            <a className={foregroundHoverClass} href="#platforms">
+              Arsenal
+            </a>
+            <a className={foregroundHoverClass} href="#why">
+              Why Ahzi
+            </a>
+            <a className={foregroundHoverClass} href="#contact">
               Contact
             </a>
           </nav>
-          <Button href={mailTo} size="sm" variant="outline">
-            <Mail aria-hidden="true" className="h-4 w-4" />
+          <Button
+            aria-controls="ahzi-agent-panel"
+            aria-expanded={isAgentOpen}
+            href="#agent"
+            onClick={openAgent}
+            size="sm"
+            variant="outline"
+          >
+            <Bot aria-hidden="true" className="h-4 w-4" />
             Start
           </Button>
         </div>
       </header>
 
       <section
-        className="relative flex min-h-[88svh] items-center border-b border-[var(--line)] px-5 pt-24 sm:px-8"
+        className="arcade-hero relative flex min-h-[92svh] items-center border-b border-[var(--line)] px-5 pt-24 sm:px-8"
         id="top"
       >
         <SignalField />
-        <div className="relative z-10 mx-auto w-full max-w-7xl py-16">
+        <div className="relative z-10 mx-auto grid w-full max-w-7xl gap-16 py-16 lg:grid-cols-[minmax(0,1.18fr)_minmax(20rem,0.82fr)] lg:items-center">
           <div className="max-w-4xl">
             <Badge>
               <BadgeCheck aria-hidden="true" className="h-4 w-4" />
-              CRM AI readiness and delivery
+              Forward-deployed AI // CRM native
             </Badge>
             <motion.h1
               animate={{ opacity: 1, y: 0 }}
-              className="mt-8 max-w-4xl text-balance text-5xl font-semibold leading-[0.96] text-[var(--foreground)] sm:text-7xl lg:text-8xl"
+              className="arcade-title mt-8 max-w-4xl text-balance text-5xl font-semibold leading-[0.98] text-[var(--foreground)] sm:text-7xl lg:text-8xl"
               initial={{ opacity: 0, y: 20 }}
               transition={{ duration: 0.7, ease: 'easeOut' }}
             >
-              Get your CRM ready for agents that do real work.
+              Enterprise AI that makes it past the loading screen.
             </motion.h1>
             <p className="mt-8 max-w-2xl text-lg leading-8 text-[var(--foreground-muted)] sm:text-xl">
-              Ahzi helps teams turn messy data, workflows, reports, tests, and
-              rollout plans into a system AI agents can safely use.
+              Ahzi embeds with your team to map the right problems, build against real systems, and activate AI workflows people actually use.
             </p>
             <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-              <Button href={mailTo} size="lg">
-                <Mail aria-hidden="true" className="h-5 w-5" />
-                Start a readiness sprint
+              <Button
+                aria-controls="ahzi-agent-panel"
+                aria-expanded={isAgentOpen}
+                href="#agent"
+                onClick={openAgent}
+                size="lg"
+              >
+                <Bot aria-hidden="true" className="h-5 w-5" />
+                Start a campaign
               </Button>
-              <Button href="#offers" size="lg" variant="outline">
-                See the offer
+              <Button href="#benefits" size="lg" variant="outline">
+                View the playbook
                 <ArrowUpRight aria-hidden="true" className="h-5 w-5" />
               </Button>
             </div>
+            <HeroSignals />
           </div>
+          <ArcadeHeroCard />
         </div>
       </section>
 
       <section
-        className="border-b border-[var(--line)] bg-[var(--background-soft)] px-5 py-20 sm:px-8"
-        id="work"
+        aria-label="Who Ahzi helps"
+        className="border-b border-[var(--line)] bg-[var(--background-soft)] px-5 py-10 sm:px-8"
       >
-        <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.92fr_1.08fr]">
-          <div>
-            <Badge>
-              <Gauge aria-hidden="true" className="h-4 w-4" />
-              Built for the messy middle
-            </Badge>
-            <h2 className="mt-6 max-w-2xl text-4xl font-semibold leading-tight text-[var(--foreground)] sm:text-5xl">
-              Most teams are not blocked by AI ideas. They are blocked by the
-              condition of the system underneath.
-            </h2>
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2">
-            {proof.map(({ icon: Icon, label }) => (
-              <div
-                className="rounded-md border border-[var(--line)] bg-[var(--surface)] p-6 shadow-[var(--panel-shadow)]"
-                key={label}
-              >
-                <Icon aria-hidden="true" className="h-6 w-6 text-[var(--accent-muted)]" />
-                <p className="mt-6 text-lg leading-7 text-[var(--foreground)]">{label}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="px-5 py-20 sm:px-8" id="offers">
-        <div className="mx-auto max-w-7xl">
-          <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
-            <div>
-              <Badge>
-                <Layers3 aria-hidden="true" className="h-4 w-4" />
-                Offers
-              </Badge>
-              <h2 className="mt-6 max-w-3xl text-4xl font-semibold leading-tight text-[var(--foreground)] sm:text-5xl">
-                Start narrow, prove value, then move the production path.
-              </h2>
-            </div>
-            <p className="max-w-xl text-lg leading-8 text-[var(--foreground-muted)]">
-              The first engagement should produce a decision, a work plan, and evidence
-              the team can inspect. No vague transformation deck.
-            </p>
-          </div>
-          <div className="mt-12 grid gap-4 lg:grid-cols-3">
-            {offers.map(({ duration, icon: Icon, text, title }) => (
+        <div className="mx-auto grid max-w-7xl gap-5 lg:grid-cols-[0.78fr_1.22fr] lg:items-start">
+          <p className="text-sm uppercase tracking-[0.18em] text-[var(--foreground-subtle)]">
+            Select your player. Ahzi works beside the people who own the result.
+          </p>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {audiences.map(({ text, title }) => (
               <article
-                className="rounded-md border border-[var(--line)] bg-[var(--surface)] p-7 shadow-[var(--panel-shadow)]"
+                className="min-h-36 rounded-md border border-[var(--line)] bg-[rgb(255_255_255_/_5%)] p-4"
                 key={title}
               >
-                <div className="flex items-center justify-between gap-6">
-                  <Icon aria-hidden="true" className="h-7 w-7 text-[var(--accent-muted)]" />
-                  <span className="rounded-md border border-[var(--line)] px-3 py-1 text-sm text-[var(--foreground-muted)]">
-                    {duration}
-                  </span>
-                </div>
-                <h3 className="mt-8 text-2xl font-semibold text-[var(--foreground)]">
-                  {title}
-                </h3>
-                <p className="mt-4 leading-7 text-[var(--foreground-muted)]">{text}</p>
+                <div className="text-base font-semibold text-[var(--foreground)]">{title}</div>
+                <p className="mt-3 text-sm leading-6 text-[var(--foreground-muted)]">{text}</p>
               </article>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="border-y border-[var(--line)] bg-[var(--ink)] px-5 py-20 text-[var(--ink-foreground)] sm:px-8">
+      <section className="px-5 py-20 sm:px-8" id="benefits">
+        <div className="mx-auto max-w-7xl">
+          <div className="mx-auto max-w-4xl text-center">
+            <Badge>
+              <Gauge aria-hidden="true" className="h-4 w-4" />
+              The deployment gap
+            </Badge>
+            <h2 className="arcade-section-title mt-6 text-4xl font-semibold leading-tight text-[var(--foreground)] sm:text-5xl">
+              Most companies have the AI tools, not the results.
+            </h2>
+            <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-[var(--foreground-muted)]">
+              The difference is deployment. Ahzi combines AI product engineering, CRM depth, and operating design to own the problem from opportunity through production.
+            </p>
+          </div>
+          <div className="mt-12 grid gap-4 lg:grid-cols-5">
+            {stackLayers.map(({ icon: Icon, number, text, title }) => (
+              <article
+                className="rounded-md border border-[var(--line)] bg-[var(--surface)] p-5 shadow-[var(--panel-shadow)]"
+                key={title}
+              >
+                <div className="flex items-center justify-between gap-4">
+                  <span className="text-sm font-semibold text-[var(--accent-muted)]">
+                    {number}
+                  </span>
+                  <Icon aria-hidden="true" className="h-6 w-6 text-[var(--accent-muted)]" />
+                </div>
+                <h3 className="mt-8 text-lg font-semibold text-[var(--foreground)]">
+                  {title}
+                </h3>
+                <p className="mt-4 text-sm leading-6 text-[var(--foreground-muted)]">{text}</p>
+              </article>
+            ))}
+          </div>
+          <div className="mt-10 flex justify-center">
+            <Button
+              aria-controls="ahzi-agent-panel"
+              aria-expanded={isAgentOpen}
+              href="#agent"
+              onClick={openAgent}
+              size="lg"
+            >
+              <Bot aria-hidden="true" className="h-5 w-5" />
+              Choose the mission
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      <section
+        aria-label="AI platform integration targets"
+        className="border-y border-[var(--line)] bg-[var(--background-soft)] px-5 py-20 sm:px-8"
+        id="platforms"
+      >
+        <div className="mx-auto max-w-7xl">
+          <div className="grid gap-8 lg:grid-cols-[0.72fr_1.28fr] lg:items-end">
+            <div>
+              <Badge>
+                <ShieldCheck aria-hidden="true" className="h-4 w-4" />
+                Vendor neutral // platform fluent
+              </Badge>
+              <h2 className="arcade-section-title mt-6 max-w-3xl text-4xl font-semibold leading-tight text-[var(--foreground)] sm:text-5xl">
+                Work at the frontier. Ship inside your stack.
+              </h2>
+            </div>
+            <p className="max-w-2xl text-lg leading-8 text-[var(--foreground-muted)] lg:justify-self-end">
+              Ahzi helps teams select and connect the model, agent, data, CRM, and workflow layers without turning a platform choice into a strategy.
+            </p>
+          </div>
+          <div className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+            {integrationPlatforms.map((platform) => (
+              <article
+                className="group rounded-md border border-[var(--line)] bg-[rgb(255_255_255_/_5%)] p-5 shadow-[var(--panel-shadow)] transition hover:border-[rgb(255_176_136_/_42%)] hover:bg-[rgb(255_255_255_/_7%)]"
+                key={platform.name}
+              >
+                <div className="flex min-h-28 flex-col justify-between">
+                  <PlatformLogo {...platform} />
+                  <div>
+                    <div className="mt-5 text-lg font-semibold leading-snug tracking-normal text-[var(--foreground)]">
+                      {platform.name}
+                    </div>
+                    <span
+                      aria-hidden="true"
+                      className="mt-3 block h-1 w-10 rounded-full"
+                      style={{ backgroundColor: platform.accent } as CSSProperties}
+                    />
+                  </div>
+                </div>
+                <p className="mt-5 text-sm leading-6 text-[var(--foreground-muted)]">
+                  {platform.focus}
+                </p>
+              </article>
+            ))}
+          </div>
+          <p className="mt-6 text-sm leading-6 text-[var(--foreground-subtle)]">
+            Platform names describe implementation experience and integration targets, not formal partner claims.
+          </p>
+        </div>
+      </section>
+
+      <section
+        className="border-y border-[var(--line)] bg-[var(--ink)] px-5 py-20 text-[var(--ink-foreground)] sm:px-8"
+        id="how"
+      >
         <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.7fr_1.3fr]">
           <div>
             <Badge className="border-[var(--ink-line)] bg-transparent text-[var(--accent-soft)]">
               <Bot aria-hidden="true" className="h-4 w-4" />
-              How work moves
+              Three-stage campaign
             </Badge>
-            <h2 className="mt-6 text-4xl font-semibold leading-tight sm:text-5xl">
-              Judgment stays human. High-volume work gets compressed.
+            <h2 className="arcade-section-title mt-6 text-4xl font-semibold leading-tight sm:text-5xl">
+              Map. Build. Activate.
             </h2>
+            <p className="mt-5 text-lg leading-8 text-[var(--ink-muted)]">
+              Strategy, engineering, and adoption stay in one loop so the system reaches production and keeps getting better.
+            </p>
           </div>
           <div className="grid gap-3">
             {sequence.map(([step, text], index) => (
               <div
-                className="grid gap-4 rounded-md border border-[var(--ink-line)] bg-white/[0.035] p-5 sm:grid-cols-[120px_1fr]"
+                className="grid items-start gap-4 rounded-md border border-[var(--ink-line)] bg-white/[0.035] p-5 sm:grid-cols-[9rem_1fr]"
                 key={step}
               >
-                <div className="text-sm font-medium uppercase text-[var(--accent-soft)]">
-                  {String(index + 1).padStart(2, '0')} {step}
+                <div className="space-y-2">
+                  <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--accent-soft)]">
+                    Stage 0{index + 1}
+                  </div>
+                  <h3 className="text-lg font-semibold leading-6 text-[var(--ink-foreground)]">
+                    {step}
+                  </h3>
                 </div>
                 <p className="text-lg leading-7 text-[var(--ink-muted)]">{text}</p>
               </div>
@@ -259,23 +743,190 @@ function App() {
         </div>
       </section>
 
-      <section className="px-5 py-20 sm:px-8" id="contact">
-        <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-10 rounded-md border border-[var(--line)] bg-[var(--surface)] p-8 shadow-[var(--panel-shadow)] sm:p-10 lg:flex-row lg:items-center">
+      <section className="px-5 py-20 sm:px-8" id="why">
+        <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[1fr_1fr] lg:items-center">
+          <div className="relative overflow-hidden rounded-md border border-[var(--line)] bg-[var(--surface)] p-7 shadow-[var(--panel-shadow)]">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgb(255_176_136_/_18%),transparent_34%),radial-gradient(circle_at_90%_30%,rgb(73_94_158_/_20%),transparent_32%)]" />
+            <div className="relative grid gap-4">
+              <div className="rounded-md border border-[var(--line)] bg-[rgb(7_11_16_/_72%)] p-5">
+                <div className="flex items-center justify-between text-sm text-[var(--foreground-subtle)]">
+                  <span>Priority map</span>
+                  <span>CRM readiness</span>
+                </div>
+                <div className="mt-5 grid gap-3">
+                  {['Business gaps', 'System layers', 'Roadmap work', 'Launch gates'].map(
+                    (item, index) => (
+                      <div
+                        className="flex items-center justify-between rounded-md border border-[var(--line)] bg-[rgb(255_255_255_/_5%)] px-4 py-3"
+                        key={item}
+                      >
+                        <span className="text-sm text-[var(--foreground-muted)]">{item}</span>
+                        <span className="text-sm text-[var(--accent-muted)]">
+                          {index === 0 ? 'Identify' : index === 1 ? 'Map' : index === 2 ? 'Prioritize' : 'Gate'}
+                        </span>
+                      </div>
+                    ),
+                  )}
+                </div>
+              </div>
+              <div className="grid gap-3 sm:grid-cols-3">
+                {['Scope', 'Validate', 'Launch'].map((item) => (
+                  <div
+                    className="rounded-md border border-[var(--line)] bg-[rgb(7_11_16_/_62%)] p-4"
+                    key={item}
+                  >
+                    <div className="text-xs uppercase tracking-[0.16em] text-[var(--foreground-subtle)]">
+                      {item}
+                    </div>
+                    <div className="mt-3 h-2 rounded-full bg-[rgb(255_176_136_/_62%)]" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+          <div>
+            <Badge>
+              <Layers3 aria-hidden="true" className="h-4 w-4" />
+              Why Ahzi
+            </Badge>
+            <h2 className="arcade-section-title mt-6 max-w-3xl text-4xl font-semibold leading-tight text-[var(--foreground)] sm:text-5xl">
+              Forward-deployed. Business aware. CRM deep.
+            </h2>
+            <p className="mt-5 max-w-2xl text-lg leading-8 text-[var(--foreground-muted)]">
+              Ahzi works inside the problem with the operators, product teams, and system owners who know where the work gets stuck.
+            </p>
+            <p className="mt-5 max-w-2xl text-lg leading-8 text-[var(--foreground-muted)]">
+              That means one accountable path across AI strategy, software delivery, customer systems, workflow change, evaluation, and launch.
+            </p>
+            <div className="mt-10">
+              <Button href="#contact" onClick={openEmail} size="lg">
+                <Mail aria-hidden="true" className="h-5 w-5" />
+                Start a conversation
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section
+        className="border-y border-[var(--line)] bg-[var(--background-soft)] px-5 py-20 sm:px-8"
+        id="outputs"
+      >
+        <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.92fr_1.08fr] lg:items-center">
+          <div>
+            <Badge>
+              <FileCheck2 aria-hidden="true" className="h-4 w-4" />
+              Working output
+            </Badge>
+            <h2 className="arcade-section-title mt-6 max-w-2xl text-4xl font-semibold leading-tight text-[var(--foreground)] sm:text-5xl">
+              Working software and operating proof, not another slide deck.
+            </h2>
+            <p className="mt-5 max-w-2xl text-lg leading-8 text-[var(--foreground-muted)]">
+              Every mission leaves the team with something it can run, inspect, measure, and improve.
+            </p>
+          </div>
+          <div className="grid gap-4">
+            {outcomes.map(({ code, icon: Icon, items, title }) => (
+              <article
+                className="min-h-44 rounded-md border border-[var(--line)] bg-[var(--surface)] p-5 shadow-[var(--panel-shadow)]"
+                key={title}
+              >
+                <div className="flex items-start gap-4">
+                  <div className="grid h-11 w-11 shrink-0 place-items-center rounded-md border border-[var(--line)] text-[var(--accent-muted)]">
+                    <Icon aria-hidden="true" className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--foreground-subtle)]">
+                      {code}
+                    </div>
+                    <h3 className="mt-2 text-xl font-semibold text-[var(--foreground)]">{title}</h3>
+                    <ul className="mt-4 grid gap-2 sm:grid-cols-3">
+                      {items.map((item) => (
+                        <li
+                          className="flex min-h-10 items-center gap-2 rounded-md border border-[var(--line)] px-3 py-2 text-sm leading-5 text-[var(--foreground-muted)]"
+                          key={item}
+                        >
+                          <BadgeCheck
+                            aria-hidden="true"
+                            className="h-4 w-4 shrink-0 text-[var(--accent-muted)]"
+                          />
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="border-b border-[var(--line)] px-5 py-20 sm:px-8" id="first-sprint">
+        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-center">
+          <div>
+            <Badge>
+              <Route aria-hidden="true" className="h-4 w-4" />
+              Insert coin
+            </Badge>
+            <h2 className="arcade-section-title mt-6 text-4xl font-semibold leading-tight text-[var(--foreground)] sm:text-5xl">
+              Start with one valuable workflow.
+            </h2>
+            <p className="mt-5 max-w-xl text-lg leading-8 text-[var(--foreground-muted)]">
+              The first campaign finds the value, proves the hard parts, and creates a production path before the scope expands.
+            </p>
+          </div>
+          <div className="grid gap-4">
+            <div className="rounded-md border border-[var(--line)] bg-[rgb(255_255_255_/_5%)] p-5">
+              <div className="text-sm uppercase tracking-[0.16em] text-[var(--foreground-subtle)]">
+                Level start
+              </div>
+              <p className="mt-3 text-lg leading-7 text-[var(--foreground-muted)]">
+                A business-critical workflow has clear upside, but the data, systems, controls, and ownership are not ready to ship.
+              </p>
+            </div>
+            <div className="rounded-md border border-[var(--line)] bg-[rgb(255_255_255_/_5%)] p-5">
+              <div className="text-sm uppercase tracking-[0.16em] text-[var(--foreground-subtle)]">
+                Level clear
+              </div>
+              <p className="mt-3 text-lg leading-7 text-[var(--foreground-muted)]">
+                The team gets a validated opportunity, working prototype, implementation map, evaluation plan, and clear production gates.
+              </p>
+            </div>
+            <Button
+              aria-controls="ahzi-agent-panel"
+              aria-expanded={isAgentOpen}
+              className="w-full justify-center sm:w-fit"
+              href="#agent"
+              onClick={openAgent}
+              size="lg"
+            >
+              <Bot aria-hidden="true" className="h-5 w-5" />
+              Open mission control
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      <section
+        className="border-b border-[var(--line)] bg-[var(--background-soft)] px-5 py-20 sm:px-8"
+        id="contact"
+      >
+        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1fr_auto] lg:items-center">
           <div>
             <Badge>
               <Mail aria-hidden="true" className="h-4 w-4" />
-              First pilot
+              Continue?
             </Badge>
-            <h2 className="mt-6 max-w-3xl text-4xl font-semibold leading-tight text-[var(--foreground)] sm:text-5xl">
-              Run one readiness sprint before building a bigger agency motion.
+            <h2 className="arcade-section-title mt-6 max-w-3xl text-4xl font-semibold leading-tight text-[var(--foreground)] sm:text-5xl">
+              Bring the workflow. Leave with a path to production.
             </h2>
             <p className="mt-5 max-w-2xl text-lg leading-8 text-[var(--foreground-muted)]">
-              Best first buyer: a CRM team with AI pressure, messy foundations,
-              and a leader who needs proof before production.
+              Start with mission control or contact Ahzi directly. The first reply will focus on the business result, the system underneath it, and what should happen next.
             </p>
           </div>
           <div className="flex w-full flex-col gap-4 sm:w-auto sm:min-w-80">
-            <Button className="w-full justify-center" href={mailTo} size="lg">
+            <Button className="w-full justify-center" href="#contact" onClick={openEmail} size="lg">
               <Mail aria-hidden="true" className="h-5 w-5" />
               Email Ahzi
               <ArrowUpRight aria-hidden="true" className="h-5 w-5" />
@@ -285,10 +936,11 @@ function App() {
               Call {contactPhoneDisplay}
             </Button>
             <div className="grid gap-2 text-sm text-[var(--foreground-muted)]">
-              <a className="transition hover:text-[var(--foreground)]" href={mailTo}>
-                {contactEmail}
-              </a>
-              <a className="transition hover:text-[var(--foreground)]" href={phoneTo}>
+              <span>
+                {contactNotice ||
+                  'Send the workflow, owner, and timing so the first reply can be specific.'}
+              </span>
+              <a className={footerLinkClass} href={phoneTo}>
                 {contactPhoneDisplay}
               </a>
             </div>
@@ -298,12 +950,19 @@ function App() {
 
       <footer className="border-t border-[var(--line)] px-5 py-8 text-sm text-[var(--foreground-subtle)] sm:px-8">
         <div className="mx-auto flex max-w-7xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <span>Ahzi. CRM AI readiness and delivery acceleration.</span>
-          <a className="transition hover:text-[var(--foreground)]" href={mailTo}>
-            {contactEmail}
+          <span>Ahzi // Enterprise AI that ships.</span>
+          <a className={footerLinkClass} href="#contact">
+            Contact Ahzi
           </a>
         </div>
       </footer>
+      <AgentChat
+        isOpen={isAgentOpen}
+        openProtectedMailTo={openProtectedMailTo}
+        phoneHref={phoneTo}
+        restoreFocusRef={restoreFocusRef}
+        setIsOpen={setIsAgentOpen}
+      />
     </main>
   )
 }
