@@ -20,6 +20,6 @@ npm run build
 
 ## Deployment
 
-Production is published through the Squarespace account that manages `https://ahzi.tech`.
+Production is served by GitHub Pages at `https://ahzi.tech`; Squarespace manages the domain and DNS.
 
-The `main` branch also deploys a review build through GitHub Pages. Run `npm run build` before either release path; the static output is written to `dist/`.
+The `main` branch deploys through the Pages workflow. Run `npm run build` before release; the static output is written to `dist/`.
