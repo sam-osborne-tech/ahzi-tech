@@ -306,24 +306,6 @@ function SignalField() {
   return (
     <div aria-hidden="true" className="signal-field">
       <div className="signal-grid" />
-      <div className="signal-radar">
-        {signals.map(([label, value], index) => (
-          <motion.div
-            animate={{ opacity: [0.46, 0.9, 0.46], y: [0, -5, 0] }}
-            className="signal-chip"
-            key={label}
-            transition={{
-              duration: 5.2,
-              repeat: Infinity,
-              delay: index * 0.35,
-              ease: 'easeInOut',
-            }}
-          >
-            <span>{label}</span>
-            <strong>{value}</strong>
-          </motion.div>
-        ))}
-      </div>
       <div className="signal-lines">
         {Array.from({ length: 18 }).map((_, index) => (
           <span key={index} style={{ '--i': index } as CSSProperties} />
@@ -337,7 +319,7 @@ function HeroSignals() {
   return (
     <div
       aria-label="AI consulting readiness signals"
-      className="mt-8 grid max-w-2xl gap-2 sm:grid-cols-2 lg:hidden"
+      className="mt-8 grid max-w-2xl gap-2 sm:grid-cols-2"
     >
       {signals.map(([label, value]) => (
         <div

@@ -112,36 +112,6 @@ section[id] {
   mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent);
 }
 
-.signal-radar {
-  position: absolute;
-  right: clamp(1.25rem, 8vw, 9rem);
-  top: clamp(6rem, 17vh, 11rem);
-  display: grid;
-  width: min(520px, 42vw);
-  gap: 0.75rem;
-}
-
-.signal-chip {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  border: 1px solid var(--line);
-  border-radius: 0.5rem;
-  background: rgb(5 6 16 / 78%);
-  padding: 0.9rem 1rem;
-  box-shadow: 0 14px 30px rgb(0 0 0 / 28%);
-  backdrop-filter: blur(12px);
-}
-
-.signal-chip span {
-  color: var(--foreground-subtle);
-}
-
-.signal-chip strong {
-  color: var(--accent);
-  font-weight: 600;
-}
-
 .signal-lines {
   position: absolute;
   inset: auto 0 4rem 0;
@@ -588,16 +558,3 @@ section[id] {
   }
 }
 
-@media (max-width: 860px) {
-  .signal-radar {
-    bottom: 2rem;
-    left: 1.25rem;
-    right: 1.25rem;
-    top: auto;
-    width: auto;
-  }
-
-  .signal-chip {
-    display: none;
-  }
-}
