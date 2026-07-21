@@ -26,6 +26,34 @@ type AgentMessage = {
   text: string
 }
 
+const streamIntervalMs = 24
+const streamCharsPerTick = 2
+
+function StreamedText({ text }: { text: string }) {
+  const [visibleCount, setVisibleCount] = useState(() =>
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches ? text.length : 0,
+  )
+
+  useEffect(() => {
+    if (visibleCount >= text.length) return
+
+    const intervalId = window.setInterval(() => {
+      setVisibleCount((count) => Math.min(count + streamCharsPerTick, text.length))
+    }, streamIntervalMs)
+
+    return () => window.clearInterval(intervalId)
+  }, [text, visibleCount])
+
+  const isStreaming = visibleCount < text.length
+
+  return (
+    <>
+      {text.slice(0, visibleCount)}
+      {isStreaming ? <span aria-hidden="true" className="stream-caret" /> : null}
+    </>
+  )
+}
+
 type AgentChatProps = {
   isOpen: boolean
   openProtectedMailTo: ProtectedMailToHandler
@@ -46,7 +74,7 @@ const intakeOptions = [
 ]
 
 const firstAgentMessage =
-  'MISSION CONTROL ONLINE. What business result are you trying to unlock with AI?'
+  'Ahzi assistant online. What business result are you trying to unlock with AI?'
 
 function getAgentReply(input: string, selectedNeeds: string[]) {
   const currentInput = input.toLowerCase()
@@ -73,7 +101,7 @@ function getAgentReply(input: string, selectedNeeds: string[]) {
     currentInput.includes('evidence') ||
     currentInput.includes('test')
   ) {
-    return 'The mission needs launch evidence: evaluations, acceptance checks, and the operating proof required to move forward.'
+    return 'That needs launch evidence: evaluations, acceptance checks, and the operating proof required to move forward.'
   }
 
   if (currentInput.includes('migration') || currentInput.includes('risk')) {
@@ -93,7 +121,7 @@ function getAgentReply(input: string, selectedNeeds: string[]) {
   }
 
   if (selectedNeeds.length >= 3) {
-    return 'That is enough to shape a mission brief. The next useful detail is who owns the workflow and who must trust the result.'
+    return 'That is enough to shape a project brief. The next useful detail is who owns the workflow and who must trust the result.'
   }
 
   if (fullContext.includes('report')) {
@@ -112,7 +140,7 @@ function getAgentReply(input: string, selectedNeeds: string[]) {
     return 'That points to activation. Define who uses the AI workflow, what changes in their work, and what proof earns trust.'
   }
 
-  return 'Add one more constraint and I can turn this into a cleaner AI mission brief.'
+  return 'Add one more constraint and I can turn this into a cleaner AI project brief.'
 }
 
 export function AgentChat({
@@ -178,7 +206,7 @@ export function AgentChat({
   const summaryEmailBody = useMemo(() => {
     const selected = selectedNeeds.length ? selectedNeeds.join(', ') : 'None selected yet'
     const conversation = messages
-      .map(({ role, text }) => `${role === 'agent' ? 'Ahzi mission control' : 'Visitor'}: ${text}`)
+      .map(({ role, text }) => `${role === 'agent' ? 'Ahzi assistant' : 'Visitor'}: ${text}`)
       .join('\n')
 
     return `Needs selected: ${selected}\n\nConversation:\n${conversation}`
@@ -225,7 +253,7 @@ export function AgentChat({
       <button
         aria-controls="ahzi-agent-panel"
         aria-expanded={false}
-        aria-label="Open Ahzi mission control"
+        aria-label="Open Ahzi assistant chat"
         className="fixed bottom-[calc(1rem_+_env(safe-area-inset-bottom))] right-4 z-[70] inline-flex h-11 w-11 items-center justify-center rounded-md border border-[var(--line)] bg-[var(--accent)] text-[var(--accent-foreground)] shadow-[var(--panel-shadow)] transition hover:bg-[var(--accent-strong)] md:right-5 md:h-12 md:w-12"
         id="agent"
         onClick={(event) => {
@@ -241,7 +269,7 @@ export function AgentChat({
 
   return (
     <aside
-      aria-label="Ahzi mission control"
+      aria-label="Ahzi assistant"
       className="fixed bottom-[calc(1rem_+_env(safe-area-inset-bottom))] left-4 right-4 z-[70] max-h-[calc(100svh_-_2rem_-_env(safe-area-inset-bottom))] overflow-hidden rounded-md border border-[var(--line)] bg-[rgb(5_6_16_/_96%)] shadow-[0_24px_90px_rgb(0_0_0_/_50%)] backdrop-blur-xl sm:left-auto sm:w-[23rem]"
       id="ahzi-agent-panel"
     >
@@ -251,13 +279,15 @@ export function AgentChat({
             <Bot aria-hidden="true" className="h-5 w-5" />
           </span>
           <div>
-            <div className="text-sm font-semibold text-[var(--foreground)]">Mission control</div>
-            <div className="text-xs text-[var(--foreground-subtle)]">Project intake // online</div>
+            <div className="text-sm font-semibold text-[var(--foreground)]">Ahzi assistant</div>
+            <div className="text-xs text-[var(--foreground-subtle)]">
+              Scripted demo, not a live model
+            </div>
           </div>
         </div>
         <div className="flex items-center gap-2">
           <button
-            aria-label="Reset mission control conversation"
+            aria-label="Reset conversation"
             className={iconControlClass}
             onClick={handleReset}
             title="Reset conversation"
@@ -266,7 +296,7 @@ export function AgentChat({
             <RotateCcw aria-hidden="true" className="h-4 w-4" />
           </button>
           <button
-            aria-label="Close mission control"
+            aria-label="Close assistant chat"
             className={iconControlClass}
             onClick={closeAgent}
             type="button"
@@ -277,7 +307,7 @@ export function AgentChat({
       </div>
 
       <div
-        aria-label="Ahzi mission control conversation"
+        aria-label="Ahzi assistant conversation"
         aria-live="polite"
         className="max-h-[min(17rem,34svh)] space-y-3 overflow-y-auto p-4"
         ref={messagesLogRef}
@@ -295,7 +325,7 @@ export function AgentChat({
                   : 'border-[var(--line)] bg-[rgb(255_255_255_/_6%)] text-[var(--foreground-muted)]'
               }`}
             >
-              {text}
+              {role === 'agent' ? <StreamedText text={text} /> : text}
             </div>
           </div>
         ))}
@@ -326,10 +356,10 @@ export function AgentChat({
 
       <form className="flex gap-2 border-t border-[var(--line)] p-3 sm:p-4" onSubmit={handleSubmit}>
         <input
-          aria-label="Message Ahzi mission control"
+          aria-label="Message the Ahzi assistant"
           className="min-w-0 flex-1 rounded-md border border-[var(--line)] bg-[rgb(255_255_255_/_6%)] px-3 text-sm text-[var(--foreground)] outline-none transition placeholder:text-[var(--foreground-subtle)] focus:border-[var(--ring)]"
           onChange={(event) => setDraft(event.target.value)}
-          placeholder="Enter your mission"
+          placeholder="Describe your workflow"
           ref={inputRef}
           type="text"
           value={draft}

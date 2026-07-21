@@ -29,7 +29,8 @@ import type { CSSProperties, MouseEvent } from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { motion } from 'motion/react'
 import { AgentChat, type ProtectedMailToHandler } from './components/agent-chat'
-import { ScrollHud } from './components/scroll-hud'
+import { AiPipeline } from './components/ai-pipeline'
+import { ScrollProgress } from './components/scroll-progress'
 import { Badge } from './components/ui/badge'
 import { Button } from './components/ui/button'
 import {
@@ -61,10 +62,10 @@ const openMailTo = (subject = 'AI consulting conversation', body?: string) => {
 }
 
 const signals = [
-  ['Mission', 'Locked'],
-  ['Data layer', 'Mapped'],
-  ['Workflow', 'Ready'],
-  ['Launch path', 'Armed'],
+  ['Opportunity', 'Mapped'],
+  ['Data layer', 'Ready'],
+  ['Workflow', 'Designed'],
+  ['Launch path', 'Clear'],
 ]
 
 const audiences = [
@@ -354,8 +355,8 @@ function ArcadeHeroCard() {
   return (
     <div className="arcade-cartridge hidden lg:block">
       <div className="arcade-cartridge__hud">
-        <span>PLAYER 1</span>
-        <span>AI MODE</span>
+        <span>AHZI</span>
+        <span>AI DELIVERY</span>
       </div>
       <div className="arcade-cartridge__screen">
         <img alt="Ahzi logo" className="arcade-cartridge__logo" src={ahziLogoPath} />
@@ -376,8 +377,7 @@ function ArcadeHeroCard() {
         </span>
       </div>
       <div className="arcade-cartridge__prompt">
-        <span aria-hidden="true">▶</span>
-        PRESS START TO SHIP
+        FROM PROTOTYPE TO PRODUCTION
       </div>
     </div>
   )
@@ -512,13 +512,13 @@ function App() {
           </a>
           <nav className="hidden items-center gap-6 text-sm text-[var(--foreground-muted)] md:flex">
             <a className={foregroundHoverClass} href="#benefits">
-              Missions
+              Services
             </a>
             <a className={foregroundHoverClass} href="#how">
-              Campaign
+              Approach
             </a>
             <a className={foregroundHoverClass} href="#platforms">
-              Arsenal
+              Platforms
             </a>
             <a className={foregroundHoverClass} href="#why">
               Why Ahzi
@@ -536,7 +536,7 @@ function App() {
             variant="outline"
           >
             <Bot aria-hidden="true" className="h-4 w-4" />
-            Start
+            Chat
           </Button>
         </div>
       </header>
@@ -558,7 +558,7 @@ function App() {
               initial={{ opacity: 0, y: 20 }}
               transition={{ duration: 0.7, ease: 'easeOut' }}
             >
-              Enterprise AI that makes it past the loading screen.
+              Enterprise AI that makes it into production.
             </motion.h1>
             <p className="mt-8 max-w-2xl text-lg leading-8 text-[var(--foreground-muted)] sm:text-xl">
               Ahzi embeds with your team to map the right problems, build against real systems, and activate AI workflows people actually use.
@@ -572,10 +572,10 @@ function App() {
                 size="lg"
               >
                 <Bot aria-hidden="true" className="h-5 w-5" />
-                Start a campaign
+                Start a conversation
               </Button>
               <Button href="#benefits" size="lg" variant="outline">
-                View the playbook
+                See the approach
                 <ArrowUpRight aria-hidden="true" className="h-5 w-5" />
               </Button>
             </div>
@@ -591,7 +591,7 @@ function App() {
       >
         <div className="mx-auto grid max-w-7xl gap-5 lg:grid-cols-[0.78fr_1.22fr] lg:items-start">
           <p className="text-sm uppercase tracking-[0.18em] text-[var(--foreground-subtle)]">
-            Select your player. Ahzi works beside the people who own the result.
+            Ahzi works beside the people who own the result.
           </p>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {audiences.map(({ text, title }) => (
@@ -649,7 +649,7 @@ function App() {
               size="lg"
             >
               <Bot aria-hidden="true" className="h-5 w-5" />
-              Choose the mission
+              Discuss your workflow
             </Button>
           </div>
         </div>
@@ -714,7 +714,7 @@ function App() {
           <div>
             <Badge className="border-[var(--ink-line)] bg-transparent text-[var(--accent-soft)]">
               <Bot aria-hidden="true" className="h-4 w-4" />
-              Three-stage campaign
+              Three-stage approach
             </Badge>
             <h2 className="arcade-section-title mt-6 text-4xl font-semibold leading-tight sm:text-5xl">
               Map. Build. Activate.
@@ -741,6 +741,12 @@ function App() {
               </div>
             ))}
           </div>
+        </div>
+        <div className="mx-auto mt-14 max-w-7xl">
+          <p className="text-sm uppercase tracking-[0.18em] text-[var(--ink-muted)]">
+            How an Ahzi system comes together as you scroll
+          </p>
+          <AiPipeline />
         </div>
       </section>
 
@@ -823,7 +829,7 @@ function App() {
               Working software and operating proof, not another slide deck.
             </h2>
             <p className="mt-5 max-w-2xl text-lg leading-8 text-[var(--foreground-muted)]">
-              Every mission leaves the team with something it can run, inspect, measure, and improve.
+              Every engagement leaves the team with something it can run, inspect, measure, and improve.
             </p>
           </div>
           <div className="grid gap-4">
@@ -868,19 +874,19 @@ function App() {
           <div>
             <Badge>
               <Route aria-hidden="true" className="h-4 w-4" />
-              Insert coin
+              First engagement
             </Badge>
             <h2 className="arcade-section-title mt-6 text-4xl font-semibold leading-tight text-[var(--foreground)] sm:text-5xl">
               Start with one valuable workflow.
             </h2>
             <p className="mt-5 max-w-xl text-lg leading-8 text-[var(--foreground-muted)]">
-              The first campaign finds the value, proves the hard parts, and creates a production path before the scope expands.
+              The first engagement finds the value, proves the hard parts, and creates a production path before the scope expands.
             </p>
           </div>
           <div className="grid gap-4">
             <div className="rounded-md border border-[var(--line)] bg-[rgb(255_255_255_/_5%)] p-5">
               <div className="text-sm uppercase tracking-[0.16em] text-[var(--foreground-subtle)]">
-                Level start
+                Starting point
               </div>
               <p className="mt-3 text-lg leading-7 text-[var(--foreground-muted)]">
                 A business-critical workflow has clear upside, but the data, systems, controls, and ownership are not ready to ship.
@@ -888,7 +894,7 @@ function App() {
             </div>
             <div className="rounded-md border border-[var(--line)] bg-[rgb(255_255_255_/_5%)] p-5">
               <div className="text-sm uppercase tracking-[0.16em] text-[var(--foreground-subtle)]">
-                Level clear
+                What you leave with
               </div>
               <p className="mt-3 text-lg leading-7 text-[var(--foreground-muted)]">
                 The team gets a validated opportunity, working prototype, implementation map, evaluation plan, and clear production gates.
@@ -903,7 +909,7 @@ function App() {
               size="lg"
             >
               <Bot aria-hidden="true" className="h-5 w-5" />
-              Open mission control
+              Chat with Ahzi
             </Button>
           </div>
         </div>
@@ -917,13 +923,13 @@ function App() {
           <div>
             <Badge>
               <Mail aria-hidden="true" className="h-4 w-4" />
-              Continue?
+              Next step
             </Badge>
             <h2 className="arcade-section-title mt-6 max-w-3xl text-4xl font-semibold leading-tight text-[var(--foreground)] sm:text-5xl">
               Bring the workflow. Leave with a path to production.
             </h2>
             <p className="mt-5 max-w-2xl text-lg leading-8 text-[var(--foreground-muted)]">
-              Start with mission control or contact Ahzi directly. The first reply will focus on the business result, the system underneath it, and what should happen next.
+              Start a chat or contact Ahzi directly. The first reply will focus on the business result, the system underneath it, and what should happen next.
             </p>
           </div>
           <div className="flex w-full flex-col gap-4 sm:w-auto sm:min-w-80">
@@ -957,7 +963,7 @@ function App() {
           </a>
         </div>
       </footer>
-      <ScrollHud />
+      <ScrollProgress />
       <AgentChat
         isOpen={isAgentOpen}
         openProtectedMailTo={openProtectedMailTo}
