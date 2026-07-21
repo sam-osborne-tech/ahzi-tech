@@ -258,28 +258,28 @@ section[id] {
 
 .reveal-pending > div {
   opacity: 0;
-  filter: blur(2px);
-  transform: translateY(72px) scale(0.97);
+  filter: blur(3px);
+  transform: translateY(110px) scale(0.94);
   transition:
-    opacity 650ms cubic-bezier(0.22, 1, 0.36, 1),
-    filter 650ms cubic-bezier(0.22, 1, 0.36, 1),
-    transform 650ms cubic-bezier(0.22, 1, 0.36, 1);
+    opacity 750ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 750ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 750ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .reveal-pending[data-reveal-from="top"] > div {
-  transform: translateY(-72px) scale(0.97);
+  transform: translateY(-110px) scale(0.94);
 }
 
 .reveal-pending article {
   opacity: 0;
-  transform: translateY(40px) scale(0.98);
+  transform: translateY(56px) scale(0.95);
   transition:
-    opacity 600ms cubic-bezier(0.22, 1, 0.36, 1),
-    transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
+    opacity 700ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .reveal-pending[data-reveal-from="top"] article {
-  transform: translateY(-40px) scale(0.98);
+  transform: translateY(-56px) scale(0.95);
 }
 
 .reveal-in > div {
@@ -294,19 +294,19 @@ section[id] {
 }
 
 .reveal-in article:nth-child(2) {
-  transition-delay: 70ms;
+  transition-delay: 90ms;
 }
 
 .reveal-in article:nth-child(3) {
-  transition-delay: 140ms;
+  transition-delay: 180ms;
 }
 
 .reveal-in article:nth-child(4) {
-  transition-delay: 210ms;
+  transition-delay: 270ms;
 }
 
 .reveal-in article:nth-child(5) {
-  transition-delay: 280ms;
+  transition-delay: 360ms;
 }
 
 .reveal-in::before {

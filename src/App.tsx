@@ -570,7 +570,7 @@ function App() {
 
       <section
         aria-label="Who Ahzi helps"
-        className="border-b border-[var(--line)] bg-[var(--background-soft)] px-5 py-10 sm:px-8"
+        className="border-b border-[var(--line)] bg-[var(--background-soft)] px-5 py-16 lg:py-24 sm:px-8"
       >
         <div className="mx-auto grid max-w-7xl gap-5 lg:grid-cols-[0.78fr_1.22fr] lg:items-start">
           <p className="text-sm uppercase tracking-[0.18em] text-[var(--foreground-subtle)]">
@@ -590,7 +590,7 @@ function App() {
         </div>
       </section>
 
-      <section className="px-5 py-20 sm:px-8" id="benefits">
+      <section className="px-5 py-28 lg:py-44 sm:px-8" id="benefits">
         <div className="mx-auto max-w-7xl">
           <div className="mx-auto max-w-4xl text-center">
             <Badge>
@@ -640,7 +640,7 @@ function App() {
 
       <section
         aria-label="AI platform integration targets"
-        className="border-y border-[var(--line)] bg-[var(--background-soft)] px-5 py-20 sm:px-8"
+        className="border-y border-[var(--line)] bg-[var(--background-soft)] px-5 py-28 lg:py-44 sm:px-8"
         id="platforms"
       >
         <div className="mx-auto max-w-7xl">
@@ -690,7 +690,7 @@ function App() {
       </section>
 
       <section
-        className="border-y border-[var(--line)] bg-[var(--ink)] px-5 py-20 text-[var(--ink-foreground)] sm:px-8"
+        className="border-y border-[var(--line)] bg-[var(--ink)] px-5 py-28 lg:py-44 text-[var(--ink-foreground)] sm:px-8"
         id="how"
       >
         <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.7fr_1.3fr]">
@@ -733,7 +733,7 @@ function App() {
         </div>
       </section>
 
-      <section className="px-5 py-20 sm:px-8" id="why">
+      <section className="px-5 py-28 lg:py-44 sm:px-8" id="why">
         <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[1fr_1fr] lg:items-center">
           <div className="relative overflow-hidden rounded-md border border-[var(--line)] bg-[var(--surface)] p-7 shadow-[var(--panel-shadow)]">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgb(91_157_217_/_12%),transparent_34%),radial-gradient(circle_at_90%_30%,rgb(73_94_158_/_16%),transparent_32%)]" />
@@ -799,7 +799,7 @@ function App() {
       </section>
 
       <section
-        className="border-y border-[var(--line)] bg-[var(--background-soft)] px-5 py-20 sm:px-8"
+        className="border-y border-[var(--line)] bg-[var(--background-soft)] px-5 py-28 lg:py-44 sm:px-8"
         id="outputs"
       >
         <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.92fr_1.08fr] lg:items-center">
@@ -852,7 +852,7 @@ function App() {
         </div>
       </section>
 
-      <section className="border-b border-[var(--line)] px-5 py-20 sm:px-8" id="first-sprint">
+      <section className="border-b border-[var(--line)] px-5 py-28 lg:py-44 sm:px-8" id="first-sprint">
         <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-center">
           <div>
             <Badge>
@@ -899,7 +899,7 @@ function App() {
       </section>
 
       <section
-        className="border-b border-[var(--line)] bg-[var(--background-soft)] px-5 py-20 sm:px-8"
+        className="border-b border-[var(--line)] bg-[var(--background-soft)] px-5 py-28 lg:py-44 sm:px-8"
         id="contact"
       >
         <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1fr_auto] lg:items-center">
