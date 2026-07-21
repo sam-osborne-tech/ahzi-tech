@@ -340,6 +340,23 @@ const firstEngagementOutcomes = [
   'Release gates your team can run without us',
 ]
 
+type SectionPhotoProps = {
+  height: number
+  src: string
+  width: number
+}
+
+// Decorative backdrop photography, duotoned into the theme by CSS and kept
+// behind a readability gradient; free-license sources are credited in the
+// README under Photography.
+function SectionPhoto({ height, src, width }: SectionPhotoProps) {
+  return (
+    <figure aria-hidden="true" className="section-photo">
+      <img alt="" decoding="async" height={height} loading="lazy" src={src} width={width} />
+    </figure>
+  )
+}
+
 function HeroOutcomes() {
   return (
     <div className="hidden rounded-md border border-[var(--line)] bg-[var(--surface)] p-7 shadow-[var(--panel-shadow)] lg:block">
@@ -572,6 +589,7 @@ function App() {
         aria-label="Who Ahzi helps"
         className="border-b border-[var(--line)] bg-[var(--background-soft)] px-5 py-16 lg:py-24 sm:px-8"
       >
+        <SectionPhoto height={1067} src="/photos/operations-containers.webp" width={1600} />
         <div className="mx-auto grid max-w-7xl gap-5 lg:grid-cols-[0.78fr_1.22fr] lg:items-start">
           <p className="text-sm uppercase tracking-[0.18em] text-[var(--foreground-subtle)]">
             Ahzi works beside the people who own the result.
@@ -591,6 +609,7 @@ function App() {
       </section>
 
       <section className="px-5 py-28 lg:py-44 sm:px-8" id="benefits">
+        <SectionPhoto height={1034} src="/photos/document-archive.webp" width={1600} />
         <div className="mx-auto max-w-7xl">
           <div className="mx-auto max-w-4xl text-center">
             <Badge>
@@ -734,6 +753,7 @@ function App() {
       </section>
 
       <section className="px-5 py-28 lg:py-44 sm:px-8" id="why">
+        <SectionPhoto height={1067} src="/photos/enterprise-racks.webp" width={1600} />
         <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[1fr_1fr] lg:items-center">
           <div className="relative overflow-hidden rounded-md border border-[var(--line)] bg-[var(--surface)] p-7 shadow-[var(--panel-shadow)]">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgb(91_157_217_/_12%),transparent_34%),radial-gradient(circle_at_90%_30%,rgb(73_94_158_/_16%),transparent_32%)]" />
@@ -867,6 +887,16 @@ function App() {
             </p>
           </div>
           <div className="grid gap-4">
+            <figure aria-hidden="true" className="inset-photo">
+              <img
+                alt=""
+                decoding="async"
+                height={1112}
+                loading="lazy"
+                src="/photos/build-terminal.webp"
+                width={1600}
+              />
+            </figure>
             <div className="rounded-md border border-[var(--line)] bg-[rgb(255_255_255_/_5%)] p-5">
               <div className="text-sm uppercase tracking-[0.16em] text-[var(--foreground-subtle)]">
                 Starting point
