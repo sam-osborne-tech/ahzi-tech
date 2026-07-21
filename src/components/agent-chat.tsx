@@ -65,16 +65,16 @@ type AgentChatProps = {
 }
 
 const intakeOptions = [
-  'Find an AI opportunity',
-  'Build an AI product',
-  'Fix CRM readiness',
-  'Automate a workflow',
-  'Evaluate a model',
-  'Scale a pilot',
+  'Map AI candidates in my CRM',
+  'Build an agent or copilot',
+  'Extract data from documents',
+  'Automate a review workflow',
+  'Evaluate models on my data',
+  'Take a pilot to production',
 ]
 
 const firstAgentMessage =
-  'Ahzi assistant online. What business result are you trying to unlock with AI?'
+  'Scripted demo online. What workflow are you trying to automate, and what system does it live in today?'
 
 function getAgentReply(input: string, selectedNeeds: string[]) {
   const currentInput = input.toLowerCase()

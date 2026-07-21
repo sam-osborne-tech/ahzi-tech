@@ -10,9 +10,9 @@ type PipelineNode = {
 
 const nodes: PipelineNode[] = [
   { x: 30, width: 190, label: 'Data + context', detail: 'CRM, docs, operations', stage: 'Map' },
-  { x: 300, width: 160, label: 'Model layer', detail: 'Evaluated model fit', stage: 'Build' },
+  { x: 300, width: 160, label: 'Model layer', detail: 'Accuracy on your records', stage: 'Build' },
   { x: 540, width: 200, label: 'Agents + workflow', detail: 'Humans in the loop', stage: 'Build' },
-  { x: 820, width: 150, label: 'Production', detail: 'Measured outcomes', stage: 'Activate' },
+  { x: 820, width: 150, label: 'Production', detail: 'Gated, human reviewed', stage: 'Activate' },
 ]
 
 const nodeY = 118

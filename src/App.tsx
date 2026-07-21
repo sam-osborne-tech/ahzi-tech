@@ -71,19 +71,19 @@ const signals = [
 const audiences = [
   {
     title: 'Business operators',
-    text: 'Turn a high-value workflow into an AI system that runs in production.',
+    text: 'Replace a manual, high-volume workflow like intake, review, or data entry with an AI system your team supervises.',
   },
   {
     title: 'Product teams',
-    text: 'Move from a sharp idea to a tested product without losing the business case.',
+    text: 'Ship an AI feature with an evaluation harness that proves accuracy on your data before customers see it.',
   },
   {
     title: 'CRM leaders',
-    text: 'Make customer data, ownership, and workflows ready for intelligent automation.',
+    text: 'Get Salesforce data, ownership, and process clean enough for agents to read and write it safely.',
   },
   {
     title: 'AI teams',
-    text: 'Add deployment muscle, evaluation discipline, and adoption to the model layer.',
+    text: 'Add delivery capacity: MCP tools, agent harnesses, and verification pipelines around your models.',
   },
 ]
 
@@ -92,46 +92,46 @@ const stackLayers = [
     icon: Sparkles,
     number: '01',
     title: 'Opportunity mapping',
-    text: 'Find the workflows where your data, expertise, and operating model create an advantage worth building around.',
+    text: 'Score your CRM and operations workflows by volume, error cost, and data readiness to pick the first build.',
   },
   {
     icon: Bot,
     number: '02',
-    title: 'Custom AI products',
-    text: 'Design and ship useful agents, copilots, internal tools, and customer experiences against real business constraints.',
+    title: 'Agents and copilots',
+    text: 'Build agents that read and write your real systems: Salesforce, document stores, and internal APIs.',
   },
   {
     icon: Gauge,
     number: '03',
-    title: 'Model and platform fit',
-    text: 'Evaluate the right models, tools, and architecture with evidence from the work the system must actually perform.',
+    title: 'Extraction pipelines',
+    text: 'Turn contracts, forms, and documents into structured records, verified across the whole population, not spot checks.',
   },
   {
     icon: Database,
     number: '04',
-    title: 'Enterprise implementation',
-    text: 'Connect data, CRM, interfaces, controls, and integrations into a secure system your team can operate.',
+    title: 'Evaluation and gates',
+    text: 'Measure model accuracy on your records, set release gates, and give security the audit trail to sign off.',
   },
   {
     icon: Workflow,
     number: '05',
-    title: 'Activation and iteration',
-    text: 'Redesign the workflow, enable the people using it, measure the result, and keep improving after launch.',
+    title: 'Team activation',
+    text: 'Train the owners of the workflow, wire human review into the loop, and track production accuracy after launch.',
   },
 ]
 
 const sequence = [
   [
     'Map',
-    'Surface the problems worth solving with AI, then trace the data, knowledge, economics, and workflow that make the opportunity defensible.',
+    'Inventory the candidate workflows, pull real samples of the data behind them, and score each by volume, error cost, and feasibility.',
   ],
   [
     'Build',
-    'Embed with the team, work against real systems and constraints, and own the path from prototype through production.',
+    'Develop against your sandbox and real records. Every prototype ships with an accuracy report on your data, not a demo dataset.',
   ],
   [
     'Activate',
-    'Redesign how people and agents work together, prove the early win, and create the operating rhythm that makes it compound.',
+    'Put humans in the review loop, set the release gates, and hand your team the dashboards and runbooks to operate the system.',
   ],
 ]
 
@@ -334,10 +334,10 @@ function HeroSignals() {
 }
 
 const firstEngagementOutcomes = [
-  'A validated, high-value AI opportunity',
-  'A working prototype against your real systems',
-  'An implementation map and evaluation plan',
-  'Clear production gates your team can run',
+  'A scored map of AI candidates in your workflows',
+  'A working prototype built against your real systems',
+  'An accuracy report measured on your records',
+  'Release gates your team can run without us',
 ]
 
 function HeroOutcomes() {
@@ -544,7 +544,7 @@ function App() {
               Enterprise AI that makes it into production.
             </motion.h1>
             <p className="mt-8 max-w-2xl text-lg leading-8 text-[var(--foreground-muted)] sm:text-xl">
-              Ahzi embeds with your team to map the right problems, build against real systems, and activate AI workflows people actually use.
+              Ahzi builds agents, copilots, and document extraction pipelines inside your CRM and operations stack, and ships them with the evaluation evidence to clear production review.
             </p>
             <div className="mt-10 flex flex-col gap-3 sm:flex-row">
               <Button
@@ -601,7 +601,7 @@ function App() {
               Most companies have the AI tools, not the results.
             </h2>
             <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-[var(--foreground-muted)]">
-              The difference is deployment. Ahzi combines AI product engineering, CRM depth, and operating design to own the problem from opportunity through production.
+              The difference is deployment. Ahzi has shipped a contract-intelligence run over 5,000+ agreements with population-level verification, agents wired into Salesforce, and the MCP tooling engineering teams use daily.
             </p>
           </div>
           <div className="mt-12 grid gap-4 lg:grid-cols-5">
@@ -783,10 +783,10 @@ function App() {
               Forward-deployed. Business aware. CRM deep.
             </h2>
             <p className="mt-5 max-w-2xl text-lg leading-8 text-[var(--foreground-muted)]">
-              Ahzi works inside the problem with the operators, product teams, and system owners who know where the work gets stuck.
+              Ahzi has run AI delivery inside a utility-scale enterprise, shipped Salesforce engineering for agencies and studios, and built the internal agent tooling an engineering organization uses every day.
             </p>
             <p className="mt-5 max-w-2xl text-lg leading-8 text-[var(--foreground-muted)]">
-              That means one accountable path across AI strategy, software delivery, customer systems, workflow change, evaluation, and launch.
+              One engineer-led thread runs from the opportunity map to the release gate. No handoff between a strategy deck and a delivery team.
             </p>
             <div className="mt-10">
               <Button href="#contact" onClick={openEmail} size="lg">
