@@ -7,11 +7,12 @@ const revealFromAttr = 'revealFrom'
 
 // The reveal boundary is pulled 15% in from both viewport edges so a section
 // re-entering from EITHER direction only animates once it is meaningfully
-// visible; the un-reveal boundary is the full viewport, so a section resets
-// the moment it fully leaves in either direction. That hysteresis is what
-// makes scroll-up re-animation actually visible instead of finishing while
-// the section is one pixel into the viewport.
+// visible. The un-reveal boundary is the viewport EXPANDED by 15% on both
+// sides, so a section is only reset once it is fully offscreen plus margin;
+// a reset can never happen while any part of a section is visible, which is
+// what previously piled mid-transition content into neighboring sections.
 const enterRootMargin = '-15% 0px -15% 0px'
+const exitRootMargin = '15% 0px 15% 0px'
 
 function crossedEdge(entry: IntersectionObserverEntry) {
   return entry.boundingClientRect.top < (entry.rootBounds?.top ?? 0) ? 'top' : 'bottom'
@@ -52,7 +53,7 @@ export function useSectionReveals() {
           }
         }
       },
-      { threshold: 0 },
+      { rootMargin: exitRootMargin, threshold: 0 },
     )
 
     for (const section of sections) {

@@ -256,57 +256,58 @@ section[id] {
   position: relative;
 }
 
-.reveal-pending > div {
+/* Hidden state: travel stays inside the section's own padding budget
+   (7rem mobile, 11rem desktop) so an un-revealed section's pixels can never
+   intrude into a visible neighbor. Transitions live ONLY on the revealed
+   state: revealing animates, resetting snaps instantly while offscreen, so
+   no section or child can ever animate toward hidden while visible. */
+.reveal-pending:not(.reveal-in) > div {
   opacity: 0;
-  filter: blur(3px);
-  transform: translateY(110px) scale(0.94);
-  transition:
-    opacity 750ms cubic-bezier(0.22, 1, 0.36, 1),
-    filter 750ms cubic-bezier(0.22, 1, 0.36, 1),
-    transform 750ms cubic-bezier(0.22, 1, 0.36, 1);
+  filter: blur(2px);
+  transform: translateY(64px) scale(0.97);
 }
 
-.reveal-pending[data-reveal-from="top"] > div {
-  transform: translateY(-110px) scale(0.94);
+.reveal-pending:not(.reveal-in)[data-reveal-from="top"] > div {
+  transform: translateY(-64px) scale(0.97);
 }
 
-.reveal-pending article {
+.reveal-pending:not(.reveal-in) article {
   opacity: 0;
-  transform: translateY(56px) scale(0.95);
-  transition:
-    opacity 700ms cubic-bezier(0.22, 1, 0.36, 1),
-    transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.reveal-pending[data-reveal-from="top"] article {
-  transform: translateY(-56px) scale(0.95);
+  transform: translateY(32px) scale(0.98);
 }
 
 .reveal-in > div {
   opacity: 1;
   filter: blur(0);
   transform: translateY(0) scale(1);
+  transition:
+    opacity 700ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 700ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .reveal-in article {
   opacity: 1;
   transform: translateY(0) scale(1);
+  transition:
+    opacity 650ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 650ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .reveal-in article:nth-child(2) {
-  transition-delay: 90ms;
+  transition-delay: 80ms;
 }
 
 .reveal-in article:nth-child(3) {
-  transition-delay: 180ms;
+  transition-delay: 160ms;
 }
 
 .reveal-in article:nth-child(4) {
-  transition-delay: 270ms;
+  transition-delay: 240ms;
 }
 
 .reveal-in article:nth-child(5) {
-  transition-delay: 360ms;
+  transition-delay: 320ms;
 }
 
 .reveal-in::before {
@@ -489,6 +490,12 @@ section[id] {
   /* Fade-only reveal variant: no travel, no blur, no scale, gentle fade. */
   .reveal-pending > div,
   .reveal-pending article {
+    transform: none !important;
+    filter: none !important;
+  }
+
+  .reveal-in > div,
+  .reveal-in article {
     transform: none !important;
     filter: none !important;
     transition: opacity 250ms ease !important;
