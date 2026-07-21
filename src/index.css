@@ -237,103 +237,16 @@ section[id] {
   opacity: 0.3;
 }
 
-.arcade-cartridge {
-  position: relative;
-  border: 1px solid var(--line);
-  border-radius: 0.75rem;
-  background: #070918;
-  padding: 0.85rem;
-  box-shadow: var(--panel-shadow);
-}
 
-.arcade-cartridge__hud {
-  display: flex;
-  justify-content: space-between;
-  border: 1px solid var(--line);
-  border-bottom: 0;
-  border-radius: 0.5rem 0.5rem 0 0;
-  padding: 0.65rem 0.8rem;
-  color: var(--foreground-subtle);
-  font-size: 0.68rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-}
 
-.arcade-cartridge__screen {
-  position: relative;
-  overflow: hidden;
-  border: 1px solid var(--line);
-  background: #111839;
-  padding: 1.25rem;
-}
 
-.arcade-cartridge__logo {
-  display: block;
-  width: 100%;
-  border-radius: 0.4rem;
-  image-rendering: auto;
-}
 
-.arcade-cartridge__scanline {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    transparent 0%,
-    rgb(91 157 217 / 4%) 48%,
-    rgb(91 157 217 / 9%) 50%,
-    rgb(91 157 217 / 4%) 52%,
-    transparent 100%
-  );
-  animation: cartridge-scan 6s linear infinite;
-}
 
-.arcade-cartridge__status {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  border-right: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
-  border-left: 1px solid var(--line);
-}
 
-.arcade-cartridge__status span {
-  display: grid;
-  gap: 0.25rem;
-  padding: 0.8rem 0.5rem;
-  color: var(--foreground-muted);
-  font-size: 0.62rem;
-  letter-spacing: 0.12em;
-  text-align: center;
-}
 
-.arcade-cartridge__status span + span {
-  border-left: 1px solid var(--line);
-}
 
-.arcade-cartridge__status strong {
-  color: var(--accent);
-  font-size: 0.9rem;
-}
 
-.arcade-cartridge__prompt {
-  display: flex;
-  justify-content: center;
-  gap: 0.75rem;
-  padding: 0.9rem 0 0.2rem;
-  color: var(--accent);
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-}
 
-@keyframes cartridge-scan {
-  from {
-    transform: translateY(-100%);
-  }
-
-  to {
-    transform: translateY(100%);
-  }
-}
 
 /* Scroll reveals: content is visible by default. The pending (hidden) state
    is only applied by JS (useSectionReveals) right before an
@@ -347,29 +260,29 @@ section[id] {
   opacity: 0;
   filter: blur(4px);
   transform: translateY(44px);
-}
-
-.reveal-pending article {
-  opacity: 0;
-  transform: translateY(26px);
-}
-
-.reveal-in > div {
-  opacity: 1;
-  filter: blur(0);
-  transform: translateY(0);
   transition:
     opacity 650ms ease-out,
     filter 650ms ease-out,
     transform 650ms ease-out;
 }
 
-.reveal-in article {
-  opacity: 1;
-  transform: translateY(0);
+.reveal-pending article {
+  opacity: 0;
+  transform: translateY(26px);
   transition:
     opacity 600ms ease-out,
     transform 600ms ease-out;
+}
+
+.reveal-in > div {
+  opacity: 1;
+  filter: blur(0);
+  transform: translateY(0);
+}
+
+.reveal-in article {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .reveal-in article:nth-child(2n) {

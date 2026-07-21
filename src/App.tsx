@@ -44,7 +44,6 @@ const contactPhone = '+14702961095'
 const contactPhoneDisplay = '(470) 296-1095'
 const phoneTo = `tel:${contactPhone}`
 const trustedContactDelayMs = 900
-const ahziLogoPath = `${import.meta.env.BASE_URL}ahzi-logo.png`
 
 const getContactEmail = () => contactEmailParts.join('@')
 
@@ -334,33 +333,32 @@ function HeroSignals() {
   )
 }
 
-function ArcadeHeroCard() {
+const firstEngagementOutcomes = [
+  'A validated, high-value AI opportunity',
+  'A working prototype against your real systems',
+  'An implementation map and evaluation plan',
+  'Clear production gates your team can run',
+]
+
+function HeroOutcomes() {
   return (
-    <div className="arcade-cartridge hidden lg:block">
-      <div className="arcade-cartridge__hud">
-        <span>AHZI</span>
-        <span>AI DELIVERY</span>
+    <div className="hidden rounded-md border border-[var(--line)] bg-[var(--surface)] p-7 shadow-[var(--panel-shadow)] lg:block">
+      <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--foreground-subtle)]">
+        Your first engagement delivers
       </div>
-      <div className="arcade-cartridge__screen">
-        <img alt="Ahzi logo" className="arcade-cartridge__logo" src={ahziLogoPath} />
-        <div aria-hidden="true" className="arcade-cartridge__scanline" />
-      </div>
-      <div className="arcade-cartridge__status">
-        <span>
-          <strong>01</strong>
-          MAP
-        </span>
-        <span>
-          <strong>02</strong>
-          BUILD
-        </span>
-        <span>
-          <strong>03</strong>
-          ACTIVATE
-        </span>
-      </div>
-      <div className="arcade-cartridge__prompt">
-        FROM PROTOTYPE TO PRODUCTION
+      <ul className="mt-5 grid gap-3">
+        {firstEngagementOutcomes.map((item) => (
+          <li
+            className="flex items-start gap-3 rounded-md border border-[var(--line)] bg-[rgb(255_255_255_/_4%)] px-4 py-3 text-sm leading-6 text-[var(--foreground-muted)]"
+            key={item}
+          >
+            <BadgeCheck aria-hidden="true" className="mt-1 h-4 w-4 shrink-0 text-[var(--accent)]" />
+            {item}
+          </li>
+        ))}
+      </ul>
+      <div className="mt-5 text-xs font-semibold uppercase tracking-[0.14em] text-[var(--accent)]">
+        From prototype to production
       </div>
     </div>
   )
@@ -566,7 +564,7 @@ function App() {
             </div>
             <HeroSignals />
           </div>
-          <ArcadeHeroCard />
+          <HeroOutcomes />
         </div>
       </section>
 

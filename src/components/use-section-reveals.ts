@@ -6,7 +6,9 @@ const revealInClass = 'reveal-in'
 
 // Content is visible by default; the pending (hidden) state is only applied
 // here, right before observing, so no browser or no-JS visitor can ever be
-// stuck with hidden or blurred sections.
+// stuck with hidden or blurred sections. Reveals re-fire: the class toggles
+// on every enter and is removed once a section fully leaves the viewport,
+// so scrolling back up and down animates again.
 export function useSectionReveals() {
   useEffect(() => {
     if (!('IntersectionObserver' in window)) return
@@ -16,10 +18,7 @@ export function useSectionReveals() {
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
-          if (entry.isIntersecting) {
-            entry.target.classList.add(revealInClass)
-            observer.unobserve(entry.target)
-          }
+          entry.target.classList.toggle(revealInClass, entry.isIntersecting)
         }
       },
       { rootMargin: '0px 0px -12% 0px', threshold: 0 },
@@ -33,9 +32,9 @@ export function useSectionReveals() {
 
       if (alreadyVisible) {
         section.classList.add(revealInClass)
-      } else {
-        observer.observe(section)
       }
+
+      observer.observe(section)
     }
 
     return () => {
