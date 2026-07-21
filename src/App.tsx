@@ -31,6 +31,7 @@ import { motion } from 'motion/react'
 import { AgentChat, type ProtectedMailToHandler } from './components/agent-chat'
 import { AiPipeline } from './components/ai-pipeline'
 import { ScrollProgress } from './components/scroll-progress'
+import { useSectionReveals } from './components/use-section-reveals'
 import { Badge } from './components/ui/badge'
 import { Button } from './components/ui/button'
 import {
@@ -386,6 +387,8 @@ function ArcadeHeroCard() {
 function App() {
   const [isAgentOpen, setIsAgentOpen] = useState(false)
   const [contactNotice, setContactNotice] = useState('')
+
+  useSectionReveals()
   const humanInteractionRef = useRef(false)
   const pageReadyAtRef = useRef(0)
   const restoreFocusRef = useRef<HTMLElement | null>(null)

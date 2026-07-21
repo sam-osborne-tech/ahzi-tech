@@ -365,35 +365,63 @@ section[id] {
   }
 }
 
-@keyframes arcade-section-reveal {
-  0% {
-    opacity: 0;
-    filter: blur(4px);
-    transform: translateY(56px);
-  }
-
-  56% {
-    opacity: 0.78;
-    filter: blur(1px);
-  }
-
-  100% {
-    opacity: 1;
-    filter: blur(0);
-    transform: translateY(0);
-  }
+/* Scroll reveals: content is visible by default. The pending (hidden) state
+   is only applied by JS (useSectionReveals) right before an
+   IntersectionObserver marks the section reveal-in, so nothing can ever be
+   stuck hidden or blurred in any engine or without JS. */
+.arcade-shell > section:not(.arcade-hero) {
+  position: relative;
 }
 
-@keyframes arcade-card-reveal {
-  from {
-    opacity: 0;
-    transform: translateY(30px) scale(0.99);
-  }
+.reveal-pending > div {
+  opacity: 0;
+  filter: blur(4px);
+  transform: translateY(44px);
+}
 
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+.reveal-pending article {
+  opacity: 0;
+  transform: translateY(26px);
+}
+
+.reveal-in > div {
+  opacity: 1;
+  filter: blur(0);
+  transform: translateY(0);
+  transition:
+    opacity 650ms ease-out,
+    filter 650ms ease-out,
+    transform 650ms ease-out;
+}
+
+.reveal-in article {
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity 600ms ease-out,
+    transform 600ms ease-out;
+}
+
+.reveal-in article:nth-child(2n) {
+  transition-delay: 90ms;
+}
+
+.reveal-in article:nth-child(3n) {
+  transition-delay: 160ms;
+}
+
+.reveal-in::before {
+  position: absolute;
+  z-index: 3;
+  top: -1px;
+  right: 0;
+  left: 0;
+  height: 2px;
+  pointer-events: none;
+  content: "";
+  background: linear-gradient(90deg, var(--accent), transparent 78%);
+  transform-origin: left;
+  animation: arcade-section-scan 900ms ease-out both;
 }
 
 @keyframes arcade-section-scan {
@@ -409,44 +437,6 @@ section[id] {
   100% {
     opacity: 0.45;
     transform: scaleX(1);
-  }
-}
-
-@supports (animation-timeline: view()) {
-  .arcade-shell > section:not(.arcade-hero) {
-    position: relative;
-  }
-
-  .arcade-shell > section:not(.arcade-hero)::before {
-    position: absolute;
-    z-index: 3;
-    top: -1px;
-    right: 0;
-    left: 0;
-    height: 2px;
-    pointer-events: none;
-    content: "";
-    background: linear-gradient(90deg, var(--accent), transparent 78%);
-    transform-origin: left;
-    animation: arcade-section-scan linear both;
-    animation-timeline: view();
-    animation-range: entry 0% cover 24%;
-  }
-
-  .arcade-shell > section:not(.arcade-hero) > div {
-    animation: arcade-section-reveal linear both;
-    animation-timeline: view();
-    animation-range: entry 0% cover 34%;
-  }
-
-  .arcade-shell > section:not(.arcade-hero) article {
-    animation: arcade-card-reveal linear both;
-    animation-timeline: view();
-    animation-range: entry 2% cover 30%;
-  }
-
-  .arcade-shell > section:not(.arcade-hero) article:nth-child(even) {
-    animation-range: entry 7% cover 34%;
   }
 }
 
