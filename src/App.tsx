@@ -264,7 +264,7 @@ function PlatformLogo({ accent, initials, logo: Logo, name }: IntegrationPlatfor
 function AhziWordmark() {
   return (
     <span className="inline-flex items-center gap-2.5">
-      <span className="grid h-9 w-9 place-items-center rounded-md border border-[rgb(255_176_136_/_42%)] bg-[rgb(255_176_136_/_12%)] text-[var(--accent-muted)] shadow-[0_10px_30px_rgb(0_0_0_/_22%)]">
+      <span className="grid h-9 w-9 place-items-center rounded-md border border-[var(--accent-border)] bg-[var(--accent-wash)] text-[var(--accent-muted)] shadow-[0_10px_30px_rgb(0_0_0_/_22%)]">
         <svg
           aria-hidden="true"
           className="h-6 w-6"
@@ -678,7 +678,7 @@ function App() {
           <div className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
             {integrationPlatforms.map((platform) => (
               <article
-                className="group rounded-md border border-[var(--line)] bg-[rgb(255_255_255_/_5%)] p-5 shadow-[var(--panel-shadow)] transition hover:border-[rgb(255_176_136_/_42%)] hover:bg-[rgb(255_255_255_/_7%)]"
+                className="group rounded-md border border-[var(--line)] bg-[rgb(255_255_255_/_5%)] p-5 shadow-[var(--panel-shadow)] transition hover:border-[var(--accent-border)] hover:bg-[rgb(255_255_255_/_7%)]"
                 key={platform.name}
               >
                 <div className="flex min-h-28 flex-col justify-between">
@@ -753,7 +753,7 @@ function App() {
       <section className="px-5 py-20 sm:px-8" id="why">
         <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[1fr_1fr] lg:items-center">
           <div className="relative overflow-hidden rounded-md border border-[var(--line)] bg-[var(--surface)] p-7 shadow-[var(--panel-shadow)]">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgb(255_176_136_/_18%),transparent_34%),radial-gradient(circle_at_90%_30%,rgb(73_94_158_/_20%),transparent_32%)]" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgb(91_157_217_/_12%),transparent_34%),radial-gradient(circle_at_90%_30%,rgb(73_94_158_/_16%),transparent_32%)]" />
             <div className="relative grid gap-4">
               <div className="rounded-md border border-[var(--line)] bg-[rgb(7_11_16_/_72%)] p-5">
                 <div className="flex items-center justify-between text-sm text-[var(--foreground-subtle)]">
@@ -785,7 +785,7 @@ function App() {
                     <div className="text-xs uppercase tracking-[0.16em] text-[var(--foreground-subtle)]">
                       {item}
                     </div>
-                    <div className="mt-3 h-2 rounded-full bg-[rgb(255_176_136_/_62%)]" />
+                    <div className="mt-3 h-2 rounded-full bg-[var(--accent-muted)]" />
                   </div>
                 ))}
               </div>

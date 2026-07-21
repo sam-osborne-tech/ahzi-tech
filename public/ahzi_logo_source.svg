@@ -1,45 +1,38 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-labelledby="title description">
   <title id="title">Ahzi</title>
-  <description id="description">Ahzi circuit logo in cyan, magenta, and green on a dark arcade grid.</description>
+  <description id="description">Ahzi circuit logo in calm blue and gray on a dark background.</description>
   <defs>
     <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse">
-      <path d="M48 0H0V48" fill="none" stroke="#35f3ff" stroke-opacity=".08" stroke-width="2"/>
+      <path d="M48 0H0V48" fill="none" stroke="#5b9dd9" stroke-opacity=".06" stroke-width="2"/>
     </pattern>
     <radialGradient id="glow" cx="50%" cy="42%" r="56%">
-      <stop offset="0" stop-color="#8b5cf6" stop-opacity=".3"/>
-      <stop offset=".58" stop-color="#ff4fd8" stop-opacity=".08"/>
+      <stop offset="0" stop-color="#5b9dd9" stop-opacity=".14"/>
+      <stop offset=".58" stop-color="#8fa8c9" stop-opacity=".05"/>
       <stop offset="1" stop-color="#050610" stop-opacity="0"/>
     </radialGradient>
-    <filter id="cyan-glow" x="-40%" y="-40%" width="180%" height="180%">
-      <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur"/>
-      <feMerge>
-        <feMergeNode in="blur"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
-    </filter>
   </defs>
   <rect width="1024" height="1024" fill="#050610"/>
   <rect width="1024" height="1024" fill="url(#grid)"/>
   <rect width="1024" height="1024" fill="url(#glow)"/>
-  <g fill="none" stroke="#35f3ff" stroke-linecap="square" stroke-linejoin="miter" stroke-width="18" filter="url(#cyan-glow)">
+  <g fill="none" stroke="#5b9dd9" stroke-linecap="square" stroke-linejoin="miter" stroke-width="18">
     <path d="M420 492V388l-72-72"/>
     <path d="M474 492V254"/>
     <path d="M528 492V316"/>
     <path d="M582 492v-92l72-72"/>
   </g>
-  <g fill="#050610" stroke="#ff4fd8" stroke-width="16">
+  <g fill="#050610" stroke="#8fa8c9" stroke-width="16">
     <circle cx="348" cy="316" r="27"/>
     <circle cx="474" cy="254" r="27"/>
     <circle cx="528" cy="316" r="27"/>
     <circle cx="654" cy="328" r="27"/>
   </g>
-  <g fill="#8cff5a">
+  <g fill="#8fa8c9">
     <rect x="409" y="480" width="22" height="22"/>
     <rect x="463" y="480" width="22" height="22"/>
     <rect x="517" y="480" width="22" height="22"/>
     <rect x="571" y="480" width="22" height="22"/>
   </g>
   <text x="512" y="660" fill="#f5f7ff" font-family="Menlo, Monaco, Consolas, monospace" font-size="132" font-weight="700" letter-spacing="6" text-anchor="middle">Ahzi</text>
-  <path d="M344 710H680" stroke="#ff4fd8" stroke-width="14"/>
-  <path d="M344 730H596" stroke="#35f3ff" stroke-width="6"/>
+  <path d="M344 710H680" stroke="#5b9dd9" stroke-width="14"/>
+  <path d="M344 730H596" stroke="#8fa8c9" stroke-width="6"/>
 </svg>

@@ -14,15 +14,14 @@
   --ink-foreground: #f8f4ff;
   --ink-muted: #c9bfe3;
   --ink-line: rgb(148 163 208 / 24%);
-  --accent: #4cc9e8;
-  --accent-strong: #2eb4d6;
-  --accent-muted: #93a5f5;
-  --accent-soft: #cbd5f5;
+  --accent: #5b9dd9;
+  --accent-strong: #4a8ac4;
+  --accent-muted: #8fa8c9;
+  --accent-soft: #c7d4e6;
   --accent-foreground: #050610;
-  --ring: #4cc9e8;
-  --pixel-green: #6ee7b7;
-  --pixel-purple: #8b5cf6;
-  --pixel-red: #ff5d73;
+  --accent-border: rgb(91 157 217 / 38%);
+  --accent-wash: rgb(91 157 217 / 12%);
+  --ring: #5b9dd9;
   --panel-shadow: 0 18px 40px rgb(0 0 0 / 34%);
 
   font-family:
@@ -97,9 +96,9 @@ section[id] {
   inset: 0;
   overflow: hidden;
   background:
-    radial-gradient(circle at 78% 30%, rgb(147 165 245 / 16%), transparent 26%),
-    linear-gradient(115deg, rgb(76 201 232 / 10%) 0%, transparent 36%),
-    linear-gradient(245deg, rgb(139 92 246 / 16%) 0%, transparent 38%),
+    radial-gradient(circle at 78% 30%, rgb(143 168 201 / 12%), transparent 26%),
+    linear-gradient(115deg, rgb(91 157 217 / 8%) 0%, transparent 36%),
+    linear-gradient(245deg, rgb(91 157 217 / 10%) 0%, transparent 38%),
     linear-gradient(180deg, transparent, rgb(5 6 16 / 96%) 84%);
 }
 
@@ -155,7 +154,7 @@ section[id] {
 .signal-lines span {
   width: 1px;
   height: calc(3rem + var(--i) * 0.42rem);
-  background: linear-gradient(180deg, transparent, rgb(76 201 232 / 60%), transparent);
+  background: linear-gradient(180deg, transparent, rgb(91 157 217 / 45%), transparent);
   animation: signal-pulse 4s ease-in-out infinite;
   animation-delay: calc(var(--i) * 120ms);
 }
@@ -197,8 +196,8 @@ section[id] {
 }
 
 .arcade-header a[aria-label="Ahzi home"] > span > span:first-child {
-  border-color: rgb(76 201 232 / 32%);
-  background: rgb(76 201 232 / 10%);
+  border-color: var(--accent-border);
+  background: var(--accent-wash);
   color: var(--accent);
   box-shadow: none;
 }
@@ -226,7 +225,7 @@ section[id] {
 }
 
 .arcade-shell article:hover {
-  border-color: rgb(76 201 232 / 36%);
+  border-color: var(--accent-border);
   transform: translateY(-2px);
 }
 
@@ -260,12 +259,12 @@ section[id] {
   pointer-events: none;
   content: "";
   background-image:
-    radial-gradient(circle at 12% 21%, var(--pixel-green) 0 1px, transparent 2px),
+    radial-gradient(circle at 12% 21%, var(--accent-muted) 0 1px, transparent 2px),
     radial-gradient(circle at 32% 72%, var(--accent-soft) 0 1px, transparent 2px),
     radial-gradient(circle at 68% 18%, var(--accent) 0 1px, transparent 2px),
     radial-gradient(circle at 89% 63%, var(--accent-muted) 0 1px, transparent 2px);
   background-size: 190px 190px, 240px 240px, 280px 280px, 320px 320px;
-  opacity: 0.35;
+  opacity: 0.3;
 }
 
 .arcade-cartridge {
@@ -310,9 +309,9 @@ section[id] {
   inset: 0;
   background: linear-gradient(
     transparent 0%,
-    rgb(76 201 232 / 5%) 48%,
-    rgb(76 201 232 / 12%) 50%,
-    rgb(76 201 232 / 5%) 52%,
+    rgb(91 157 217 / 4%) 48%,
+    rgb(91 157 217 / 9%) 50%,
+    rgb(91 157 217 / 4%) 52%,
     transparent 100%
   );
   animation: cartridge-scan 6s linear infinite;
@@ -428,7 +427,6 @@ section[id] {
     pointer-events: none;
     content: "";
     background: linear-gradient(90deg, var(--accent), transparent 78%);
-    box-shadow: 0 0 12px rgb(76 201 232 / 28%);
     transform-origin: left;
     animation: arcade-section-scan linear both;
     animation-timeline: view();
@@ -524,7 +522,7 @@ section[id] {
 }
 
 .ai-pipeline__link {
-  stroke: rgb(76 201 232 / 55%);
+  stroke: rgb(91 157 217 / 50%);
   stroke-width: 1.6;
   stroke-dasharray: 1;
 }
@@ -535,7 +533,6 @@ section[id] {
 
 .ai-pipeline__packet {
   fill: var(--accent);
-  filter: drop-shadow(0 0 6px rgb(76 201 232 / 70%));
 }
 
 .ai-pipeline__node {

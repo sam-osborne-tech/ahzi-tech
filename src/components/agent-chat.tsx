@@ -275,7 +275,7 @@ export function AgentChat({
     >
       <div className="flex items-center justify-between gap-4 border-b border-[var(--line)] p-4">
         <div className="flex items-center gap-3">
-          <span className="grid h-10 w-10 place-items-center rounded-md bg-[rgb(53_243_255_/_14%)] text-[var(--accent)]">
+          <span className="grid h-10 w-10 place-items-center rounded-md bg-[var(--accent-wash)] text-[var(--accent)]">
             <Bot aria-hidden="true" className="h-5 w-5" />
           </span>
           <div>
@@ -321,7 +321,7 @@ export function AgentChat({
             <div
               className={`max-w-[85%] rounded-md border px-3 py-2 text-sm leading-6 ${
                 role === 'visitor'
-                  ? 'border-[rgb(53_243_255_/_50%)] bg-[var(--accent)] text-[var(--accent-foreground)]'
+                  ? 'border-[var(--accent-border)] bg-[var(--accent)] text-[var(--accent-foreground)]'
                   : 'border-[var(--line)] bg-[rgb(255_255_255_/_6%)] text-[var(--foreground-muted)]'
               }`}
             >
@@ -340,7 +340,7 @@ export function AgentChat({
               aria-pressed={isSelected}
               className={`rounded-md border px-3 py-2 text-left text-xs leading-5 transition disabled:cursor-default disabled:opacity-100 ${
                 isSelected
-                  ? 'border-[rgb(140_255_90_/_60%)] bg-[rgb(140_255_90_/_12%)] text-[var(--pixel-green)]'
+                  ? 'border-[var(--accent-border)] bg-[var(--accent-wash)] text-[var(--accent)]'
                   : `border-[var(--line)] text-[var(--foreground-muted)] ${foregroundHoverClass}`
               }`}
               disabled={isSelected}
