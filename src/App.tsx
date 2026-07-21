@@ -29,6 +29,7 @@ import type { CSSProperties, MouseEvent } from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { motion } from 'motion/react'
 import { AgentChat, type ProtectedMailToHandler } from './components/agent-chat'
+import { ScrollHud } from './components/scroll-hud'
 import { Badge } from './components/ui/badge'
 import { Button } from './components/ui/button'
 import {
@@ -956,6 +957,7 @@ function App() {
           </a>
         </div>
       </footer>
+      <ScrollHud />
       <AgentChat
         isOpen={isAgentOpen}
         openProtectedMailTo={openProtectedMailTo}
