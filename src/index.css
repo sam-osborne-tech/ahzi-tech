@@ -299,6 +299,30 @@ section[id] {
   );
 }
 
+#how .section-photo {
+  --section-photo-brightness: 0.5;
+  --section-photo-opacity: 0.18;
+  --section-photo-overlay-alpha: 58%;
+}
+
+#how .section-photo::after {
+  background: linear-gradient(
+    180deg,
+    var(--ink) 0%,
+    rgb(13 9 32 / var(--section-photo-overlay-alpha)) 28%,
+    rgb(13 9 32 / var(--section-photo-overlay-alpha)) 72%,
+    var(--ink) 100%
+  );
+}
+
+#first-sprint .section-photo img {
+  object-position: center 42%;
+}
+
+#contact .section-photo img {
+  object-position: center 52%;
+}
+
 @media (max-width: 639px) {
   .section-photo {
     --section-photo-brightness: 0.58;

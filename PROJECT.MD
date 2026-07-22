@@ -58,16 +58,20 @@ Past defects this design exists to prevent (all shipped and hit by Sam before be
 
 ## Photography
 
-Current images in `public/photos/` (all 1600w webp, lazy loaded, explicit width/height, duotoned by `.section-photo`/`.inset-photo` CSS toward the calm blue behind a readability gradient):
+Current images in `public/photos/` (self-hosted WebP, lazy loaded, explicit width/height, duotoned by `.section-photo`/`.inset-photo` CSS toward the calm blue behind a readability gradient):
 
+- `hero-san-francisco.webp`: backdrop, hero
 - `operations-containers.webp`: backdrop, operators strip (section aria-label "Who Ahzi helps")
 - `document-archive.webp`: backdrop, `#benefits` (carries the extraction claim)
+- `platform-patch-panel.webp`: backdrop, `#platforms`
+- `pipeline-circuit.webp`: subdued backdrop, `#how`
 - `enterprise-racks.webp`: backdrop, `#why`
+- `outputs-linotype.webp`: backdrop, `#outputs`
+- `first-sprint-blueprints.webp`: backdrop, `#first-sprint`
 - `build-terminal.webp`: inset card, `#first-sprint`
+- `contact-cranes.webp`: backdrop, `#contact`
 
 Sourcing: Unsplash and Pexels block automated access (401/Cloudflare). Openverse (`api.openverse.org/v1/images/?q=...&license=cc0,pdm,by`) works; view every candidate before use, reject anything branded, dated, or cliche (handshakes, robot hands, masked-era shots). Licenses are credited in `README.md` under Photography; keep that section updated. CC BY needs the credit; avoid by-sa/nc/nd.
-
-OPEN TASK (Sam requested, interrupted mid-flight): extend stock backgrounds to every remaining section: hero, `#platforms`, `#how` (use a very subdued texture at low opacity so it does not fight the pipeline diagram), `#outputs`, `#first-sprint` backdrop, `#contact`. Reviewed-and-accepted candidates already downloaded to `~/tmp`: `cand2-sanfran.jpg` (hero, CC BY Matthias Rhomberg), `cand2-patch.jpg` (platforms, CC BY Wiki.will), `cand2-circuit.jpg` (pipeline texture, CC BY nenadstojkovic), `cand2-linotype.jpg` (outputs, CC BY Cargo Cult), `cand2-cranenight.jpg` (contact, CC0 rawpixel). First-sprint backdrop still needed. Process with `sips -Z 1600` + `cwebp -q 70` (plain `sips` webp export fails on this machine).
 
 ## Verification protocol (hard requirement)
 

@@ -1,49 +1,71 @@
 /// <reference types="node" />
 
-import { readFileSync, readdirSync } from 'node:fs'
-import { basename, join } from 'node:path'
+import { mkdtempSync, readFileSync, readdirSync, rmSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { createElement } from 'react'
+import { renderToStaticMarkup } from 'react-dom/server'
+import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { describe, expect, it } from 'vitest'
+import { build } from 'vite'
+import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+import App from '../App'
+import {
+  insetPhotos,
+  metadataImageFiles,
+  sectionPhotos,
+  siteImageFiles,
+} from './site-assets'
 
 const repoRoot = fileURLToPath(new URL('../..', import.meta.url))
-const appSource = readFileSync(join(repoRoot, 'src/App.tsx'), 'utf8')
 const styles = readFileSync(join(repoRoot, 'src/index.css'), 'utf8')
-const photosDirectory = join(repoRoot, 'public/photos')
+const publicDirectory = join(repoRoot, 'public')
+const buildDirectory = mkdtempSync(join(tmpdir(), 'ahzi-assets-'))
 
-const intendedStockImages = [
-  {
-    height: 1067,
-    sectionMarker: 'aria-label="Who Ahzi helps"',
-    source: '/photos/operations-containers.webp',
-    width: 1600,
-  },
-  {
-    height: 1034,
-    sectionMarker: 'id="benefits"',
-    source: '/photos/document-archive.webp',
-    width: 1600,
-  },
-  {
-    height: 1067,
-    sectionMarker: 'id="why"',
-    source: '/photos/enterprise-racks.webp',
-    width: 1600,
-  },
-  {
-    height: 1112,
-    sectionMarker: 'id="first-sprint"',
-    source: '/photos/build-terminal.webp',
-    width: 1600,
-  },
+const expectedBackgrounds = [
+  ['top', sectionPhotos.hero],
+  ['audiences', sectionPhotos.audiences],
+  ['benefits', sectionPhotos.benefits],
+  ['platforms', sectionPhotos.platforms],
+  ['how', sectionPhotos.approach],
+  ['why', sectionPhotos.why],
+  ['outputs', sectionPhotos.outputs],
+  ['first-sprint', sectionPhotos.firstSprint],
+  ['contact', sectionPhotos.contact],
 ] as const
 
-function sectionSource(marker: string) {
-  const sectionStart = appSource.indexOf(marker)
-  const sectionEnd = appSource.indexOf('</section>', sectionStart)
+beforeAll(async () => {
+  await build({
+    build: { outDir: buildDirectory },
+    configFile: join(repoRoot, 'vite.config.ts'),
+    logLevel: 'silent',
+  })
+})
 
-  expect(sectionStart, `Missing section marker ${marker}`).toBeGreaterThanOrEqual(0)
-  expect(sectionEnd, `Missing section end for ${marker}`).toBeGreaterThan(sectionStart)
-  return appSource.slice(sectionStart, sectionEnd)
+afterAll(() => {
+  rmSync(buildDirectory, { force: true, recursive: true })
+})
+
+function renderedSection(markup: string, id: string) {
+  const marker = `id="${id}"`
+  const markerIndex = markup.indexOf(marker)
+  const sectionStart = markup.lastIndexOf('<section', markerIndex)
+  const sectionEnd = markup.indexOf('</section>', markerIndex)
+
+  expect(markerIndex, `Missing rendered section ${id}`).toBeGreaterThanOrEqual(0)
+  expect(sectionStart, `Missing start for rendered section ${id}`).toBeGreaterThanOrEqual(0)
+  expect(sectionEnd, `Missing end for rendered section ${id}`).toBeGreaterThan(sectionStart)
+  return markup.slice(sectionStart, sectionEnd)
+}
+
+function webpDimensions(bytes: Buffer) {
+  expect(bytes.subarray(0, 4).toString()).toBe('RIFF')
+  expect(bytes.subarray(8, 12).toString()).toBe('WEBP')
+  expect(bytes.subarray(12, 16).toString()).toBe('VP8 ')
+
+  return {
+    height: bytes.readUInt16LE(28) & 0x3fff,
+    width: bytes.readUInt16LE(26) & 0x3fff,
+  }
 }
 
 function treatmentContribution(scope: string) {
@@ -60,26 +82,50 @@ function treatmentContribution(scope: string) {
 }
 
 describe('stock image backgrounds', () => {
-  it('tracks every intended image with exact case, nonzero WebP content, and dimensions', () => {
-    const exactFilenames = new Set(readdirSync(photosDirectory))
-    const referencedPhotos = [...appSource.matchAll(/src="(\/photos\/[^"]+)"/g)]
-      .map((match) => match[1])
-      .sort()
+  it('renders every intended background from an exact local WebP', () => {
+    const markup = renderToStaticMarkup(createElement(App))
 
-    expect(referencedPhotos).toEqual(intendedStockImages.map(({ source }) => source).sort())
+    for (const [sectionId, image] of expectedBackgrounds) {
+      const bytes = readFileSync(join(publicDirectory, image.file))
+      const section = renderedSection(markup, sectionId)
 
-    for (const image of intendedStockImages) {
-      const filename = basename(image.source)
-      const bytes = readFileSync(join(photosDirectory, filename))
-      const source = sectionSource(image.sectionMarker)
+      expect(bytes.length, `${image.file} must not be empty`).toBeGreaterThan(1024)
+      expect(webpDimensions(bytes)).toEqual({ height: image.height, width: image.width })
+      expect(section).toContain('class="section-photo"')
+      expect(section).toContain(`src="${image.src}"`)
+      expect(section).toContain(`height="${image.height}"`)
+      expect(section).toContain(`width="${image.width}"`)
+    }
 
-      expect(exactFilenames.has(filename), `${filename} must match its source reference`).toBe(true)
-      expect(bytes.length, `${filename} must not be empty`).toBeGreaterThan(1024)
-      expect(bytes.subarray(0, 4).toString()).toBe('RIFF')
-      expect(bytes.subarray(8, 12).toString()).toBe('WEBP')
-      expect(source).toContain(`height={${image.height}}`)
-      expect(source).toContain(`src="${image.source}"`)
-      expect(source).toContain(`width={${image.width}}`)
+    const firstSprint = renderedSection(markup, 'first-sprint')
+    expect(firstSprint).toContain('class="inset-photo"')
+    expect(firstSprint).toContain(`src="${insetPhotos.firstSprint.src}"`)
+  })
+
+  it('copies every image to the production build with relative Pages paths', () => {
+    const builtIndex = readFileSync(join(buildDirectory, 'index.html'), 'utf8')
+    const builtJavaScript = readdirSync(join(buildDirectory, 'assets'))
+      .filter((file) => file.endsWith('.js'))
+      .map((file) => readFileSync(join(buildDirectory, 'assets', file), 'utf8'))
+      .join('\n')
+
+    for (const file of siteImageFiles) {
+      expect(readFileSync(join(publicDirectory, file)).length).toBeGreaterThan(0)
+      expect(readFileSync(join(buildDirectory, file)).length).toBeGreaterThan(0)
+    }
+
+    for (const image of [
+      ...Object.values(sectionPhotos),
+      ...Object.values(insetPhotos),
+    ]) {
+      expect(builtJavaScript).toContain(image.file)
+    }
+
+    expect(builtJavaScript).toMatch(/src:`\.\/\$\{[^}]+\}`/)
+    expect(builtJavaScript).not.toMatch(/["']\/photos\//)
+    expect(builtIndex).toContain('href="./favicon.svg"')
+    for (const file of metadataImageFiles) {
+      expect(builtIndex).toContain(file)
     }
   })
 
@@ -94,5 +140,6 @@ describe('stock image backgrounds', () => {
     expect(styles).toContain('brightness(var(--section-photo-brightness))')
     expect(styles).toContain('opacity: var(--section-photo-opacity)')
     expect(styles).toContain('rgb(5 6 16 / var(--section-photo-overlay-alpha))')
+    expect(styles).toContain('object-fit: cover')
   })
 })

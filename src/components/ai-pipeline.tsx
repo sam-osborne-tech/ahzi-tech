@@ -39,7 +39,9 @@ function clamp01(value: number) {
 }
 
 function usePipelineProgress(ref: { current: HTMLElement | null }) {
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  const prefersReducedMotion =
+    typeof window === 'undefined' ||
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches
   const [progress, setProgress] = useState(prefersReducedMotion ? 1 : 0)
 
   useEffect(() => {

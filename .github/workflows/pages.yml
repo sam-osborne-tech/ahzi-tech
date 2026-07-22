@@ -18,6 +18,9 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      css_asset: ${{ steps.assets.outputs.css_asset }}
+      js_asset: ${{ steps.assets.outputs.js_asset }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -37,6 +40,21 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Test
+        run: npm test
+
+      - name: Capture built assets
+        id: assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          for asset in dist/assets/*.css; do
+            echo "css_asset=${asset##*/}" >> "$GITHUB_OUTPUT"
+          done
+          for asset in dist/assets/*.js; do
+            echo "js_asset=${asset##*/}" >> "$GITHUB_OUTPUT"
+          done
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v5
         with:
@@ -52,3 +70,48 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
+
+  verify:
+    name: Verify served assets
+    runs-on: ubuntu-latest
+    needs:
+      - build
+      - deploy
+    steps:
+      - name: Check production asset responses
+        shell: bash
+        run: |
+          set -euo pipefail
+          paths=(
+            "/"
+            "/assets/${{ needs.build.outputs.css_asset }}"
+            "/assets/${{ needs.build.outputs.js_asset }}"
+            "/photos/hero-san-francisco.webp"
+            "/photos/operations-containers.webp"
+            "/photos/document-archive.webp"
+            "/photos/platform-patch-panel.webp"
+            "/photos/pipeline-circuit.webp"
+            "/photos/enterprise-racks.webp"
+            "/photos/outputs-linotype.webp"
+            "/photos/first-sprint-blueprints.webp"
+            "/photos/build-terminal.webp"
+            "/photos/contact-cranes.webp"
+            "/ahzi-logo.png"
+            "/ahzi-social.png"
+            "/favicon.svg"
+          )
+
+          for path in "${paths[@]}"; do
+            output="$(mktemp)"
+            http_code="$(
+              curl --silent --show-error --location --fail-with-body \
+                --retry 12 --retry-all-errors --retry-delay 5 --retry-max-time 90 \
+                --connect-timeout 10 --max-time 30 \
+                --output "$output" --write-out "%{http_code}" \
+                "https://ahzi.tech${path}"
+            )"
+            test "$http_code" = "200"
+            test -s "$output"
+            byte_count="$(wc -c < "$output" | tr -d " ")"
+            echo "${path} ${http_code} ${byte_count}"
+          done
