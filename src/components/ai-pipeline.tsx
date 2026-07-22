@@ -90,6 +90,64 @@ function segmentProgress(progress: number, [start, end]: readonly [number, numbe
   return clamp01((progress - start) / (end - start))
 }
 
+function SourceLinks({ progress }: { progress: number }) {
+  const drawn = segmentProgress(progress, [0, 0.12])
+
+  return sourceInputs.map((y, index) => (
+    <g key={y} style={{ opacity: drawn }}>
+      <circle className="ai-pipeline__source" cx="4" cy={y} r="3.5" />
+      <path
+        className={linkClass}
+        d={`M8 ${y} C 20 ${y}, 18 ${linkY}, ${nodes[0].x} ${linkY + (index - 1) * 8}`}
+        pathLength={1}
+        style={{ strokeDashoffset: 1 - drawn }}
+      />
+    </g>
+  ))
+}
+
+function PipelineLinks({ progress }: { progress: number }) {
+  return links.map(({ from, to, range }) => {
+    const drawn = segmentProgress(progress, range)
+    const path = linkPath(from, to)
+
+    return (
+      <g key={`${from.label}-${to.label}`}>
+        <path
+          className={linkClass}
+          d={path}
+          pathLength={1}
+          style={{ strokeDashoffset: 1 - drawn }}
+        />
+        {drawn >= 1 ? (
+          <circle className="ai-pipeline__packet" r="3.2">
+            <animateMotion dur="2.6s" path={path} repeatCount="indefinite" />
+          </circle>
+        ) : null}
+      </g>
+    )
+  })
+}
+
+function PipelineNodes({ progress }: { progress: number }) {
+  return nodes.map(({ detail, label, stage, width, x }, index) => {
+    const appearAt = index === 0 ? 0.05 : links[index - 1].range[1]
+    const shown = segmentProgress(progress, [appearAt, appearAt + 0.08])
+
+    return (
+      <g
+        key={label}
+        style={{ opacity: shown, transform: `translateY(${(1 - shown) * 14}px)` }}
+      >
+        <rect className="ai-pipeline__node" height={nodeHeight} rx="8" width={width} x={x} y={nodeY} />
+        <text className="ai-pipeline__label" x={x + width / 2} y={nodeY + 28}>{label}</text>
+        <text className="ai-pipeline__detail" x={x + width / 2} y={nodeY + 48}>{detail}</text>
+        <text className="ai-pipeline__stage" x={x + width / 2} y={nodeY - 16}>{stage}</text>
+      </g>
+    )
+  })
+}
+
 export function AiPipeline() {
   const containerRef = useRef<HTMLDivElement>(null)
   const progress = usePipelineProgress(containerRef)
@@ -97,72 +155,9 @@ export function AiPipeline() {
   return (
     <div aria-hidden="true" className="ai-pipeline" ref={containerRef}>
       <svg fill="none" viewBox="0 0 1000 300" xmlns="http://www.w3.org/2000/svg">
-        {sourceInputs.map((y, index) => {
-          const drawn = segmentProgress(progress, [0, 0.12])
-
-          return (
-            <g key={y} style={{ opacity: drawn }}>
-              <circle className="ai-pipeline__source" cx="4" cy={y} r="3.5" />
-              <path
-                className={linkClass}
-                d={`M8 ${y} C 20 ${y}, 18 ${linkY}, ${nodes[0].x} ${linkY + (index - 1) * 8}`}
-                pathLength={1}
-                style={{ strokeDashoffset: 1 - drawn }}
-              />
-            </g>
-          )
-        })}
-        {links.map(({ from, to, range }) => {
-          const drawn = segmentProgress(progress, range)
-
-          return (
-            <g key={`${from.label}-${to.label}`}>
-              <path
-                className={linkClass}
-                d={linkPath(from, to)}
-                pathLength={1}
-                style={{ strokeDashoffset: 1 - drawn }}
-              />
-              {drawn >= 1 ? (
-                <circle className="ai-pipeline__packet" r="3.2">
-                  <animateMotion dur="2.6s" path={linkPath(from, to)} repeatCount="indefinite" />
-                </circle>
-              ) : null}
-            </g>
-          )
-        })}
-        {nodes.map(({ detail, label, stage, width, x }, index) => {
-          const appearAt = index === 0 ? 0.05 : links[index - 1].range[1]
-          const shown = segmentProgress(progress, [appearAt, appearAt + 0.08])
-
-          return (
-            <g
-              key={label}
-              style={{
-                opacity: shown,
-                transform: `translateY(${(1 - shown) * 14}px)`,
-              }}
-            >
-              <rect
-                className="ai-pipeline__node"
-                height={nodeHeight}
-                rx="8"
-                width={width}
-                x={x}
-                y={nodeY}
-              />
-              <text className="ai-pipeline__label" x={x + width / 2} y={nodeY + 28}>
-                {label}
-              </text>
-              <text className="ai-pipeline__detail" x={x + width / 2} y={nodeY + 48}>
-                {detail}
-              </text>
-              <text className="ai-pipeline__stage" x={x + width / 2} y={nodeY - 16}>
-                {stage}
-              </text>
-            </g>
-          )
-        })}
+        <SourceLinks progress={progress} />
+        <PipelineLinks progress={progress} />
+        <PipelineNodes progress={progress} />
       </svg>
     </div>
   )

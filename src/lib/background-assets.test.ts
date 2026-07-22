@@ -24,23 +24,19 @@ const buildDirectory = mkdtempSync(join(tmpdir(), 'ahzi-assets-'))
 const expectedBackgrounds = [
   ['top', sectionPhotos.hero],
   ['audiences', sectionPhotos.audiences],
-  ['benefits', sectionPhotos.benefits],
-  ['platforms', sectionPhotos.platforms],
+  ['use-cases', sectionPhotos.benefits],
   ['how', sectionPhotos.approach],
-  ['why', sectionPhotos.why],
-  ['outputs', sectionPhotos.outputs],
+  ['proof', sectionPhotos.why],
   ['first-sprint', sectionPhotos.firstSprint],
   ['contact', sectionPhotos.contact],
 ] as const
 
 const expectedPhotoCardCounts = [
   ['top', 5],
-  ['audiences', 4],
-  ['benefits', 5],
-  ['platforms', 10],
+  ['audiences', 3],
+  ['use-cases', 3],
   ['how', 3],
-  ['why', 1],
-  ['outputs', 5],
+  ['proof', 13],
   ['first-sprint', 2],
   ['contact', 2],
 ] as const
@@ -233,7 +229,12 @@ describe('stock image backgrounds', () => {
       expect(section).toContain(`width="${image.width}"`)
     }
 
+    const proof = renderedSection(markup, 'proof')
     const firstSprint = renderedSection(markup, 'first-sprint')
+
+    expect(proof.match(/class="inset-photo"/g)).toHaveLength(2)
+    expect(proof).toContain(`src="${sectionPhotos.platforms.src}"`)
+    expect(proof).toContain(`src="${sectionPhotos.outputs.src}"`)
     expect(firstSprint).toContain('class="inset-photo"')
     expect(firstSprint).toContain(`src="${insetPhotos.firstSprint.src}"`)
   })

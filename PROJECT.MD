@@ -1,6 +1,6 @@
 # ahzi.tech
 
-Handoff doc for any agent or engineer picking up this repo cold. Everything here is verified against the code as of commit `ab07cf6`.
+Handoff doc for any agent or engineer picking up this repo cold. Everything here is verified against the current source.
 
 ## What this is
 
@@ -14,7 +14,10 @@ Public marketing site for Ahzi LLC (Sam's Georgia LLC, S-Corp election) at https
 
 Vite + React 19 + TypeScript + Tailwind 4 (via `@tailwindcss/vite`), `motion` for the hero heading only.
 
-- `src/App.tsx`: the entire page, one component per concern (nav, hero, sections by id: `benefits`, `platforms`, `how`, `why`, `outputs`, `first-sprint`, `contact`).
+- `src/App.tsx`: state and page composition for the header, seven-stage narrative, lead funnel, scroll progress, and scripted chat.
+- `src/content/site-content.ts`: typed marketing copy, use cases, proof, platform descriptions, and CTA routes.
+- `src/components/marketing-components.tsx`: shared section shells, headings, grids, gradient cards, use-case flows, proof lists, CTA blocks, and image treatments.
+- `src/components/site-sections.tsx`: focused business sections for promise, audience/problem, use cases, delivery, proof, first engagement, and conversion.
 - `src/index.css`: theme variables, reveal state machine CSS, photo treatment, all custom styling.
 - `src/components/`: `agent-chat.tsx` (scripted demo chat), `ai-pipeline.tsx` (scroll-assembled SVG pipeline), `scroll-progress.tsx` (top progress bar + section dots), `use-section-reveals.ts` (reveal state machine).
 - `public/photos/`: self-hosted webp photography. `public/ahzi-social.png` is the OG card, `public/ahzi-logo.png` + `ahzi_logo_source.svg` the logo.
@@ -52,9 +55,9 @@ Past defects this design exists to prevent (all shipped and hit by Sam before be
 
 ## Contact wiring
 
-- Email: built at click time from `contactEmailParts = ['admin', 'ahzi.tech']` in `src/App.tsx` (obfuscation; anchors carry `#contact`/`#agent` hrefs until a trusted click). A guard requires a trusted user event plus a 900ms page-settle before `mailto:` fires; synthetic clicks show a retry notice instead. That guard blocking automation is correct behavior, not a bug.
-- Phone: `contactPhone = '+14702961095'`, rendered as `tel:+14702961095` in the contact section and chat footer.
-- All CTAs route to section anchors, the chat panel, mailto, or tel. Audited 2026-07-21: no dead ends.
+- Email: built at click time from protected parts in `src/lib/contact.ts` (obfuscation; anchors carry `#contact`/`#agent` hrefs until a trusted click). `src/components/use-protected-contact.ts` requires a trusted user event plus a 900ms page-settle before `mailto:` fires; synthetic clicks show a retry notice instead. That guard blocking automation is correct behavior, not a bug.
+- Phone: the protected number in `src/lib/contact.ts` is rendered as a `tel:` link in the chat footer.
+- All CTAs route to section anchors, the chat panel, mailto, or tel. Marketing routes are single-sourced in `src/content/site-content.ts`.
 
 ## Photography
 
@@ -62,11 +65,11 @@ Current images in `public/photos/` (self-hosted WebP, lazy loaded, explicit widt
 
 - `hero-san-francisco.webp`: backdrop, hero
 - `operations-containers.webp`: backdrop, operators strip (section aria-label "Who Ahzi helps")
-- `document-archive.webp`: backdrop, `#benefits` (carries the extraction claim)
-- `platform-patch-panel.webp`: backdrop, `#platforms`
+- `document-archive.webp`: backdrop, `#use-cases` (carries the extraction claim)
+- `platform-patch-panel.webp`: inset, `#proof`
 - `pipeline-circuit.webp`: subdued backdrop, `#how`
-- `enterprise-racks.webp`: backdrop, `#why`
-- `outputs-linotype.webp`: backdrop, `#outputs`
+- `enterprise-racks.webp`: backdrop, `#proof`
+- `outputs-linotype.webp`: inset, `#proof`
 - `first-sprint-blueprints.webp`: backdrop, `#first-sprint`
 - `build-terminal.webp`: inset card, `#first-sprint`
 - `contact-cranes.webp`: backdrop, `#contact`

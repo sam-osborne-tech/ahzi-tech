@@ -5,11 +5,11 @@ import { LeadIntakeForm } from './lead-intake-form'
 describe('LeadIntakeForm', () => {
   it('renders an accessible, low-friction qualification form', () => {
     const markup = renderToStaticMarkup(
-      <LeadIntakeForm onPrepareDraft={() => true} />,
+      <LeadIntakeForm formTitle="Share the workflow context" onPrepareDraft={() => true} />,
     )
 
     expect(markup).toContain('<form')
-    expect(markup).toContain('Request a workflow fit review')
+    expect(markup).toContain('Share the workflow context')
     expect(markup).toContain('for="lead-name"')
     expect(markup).toContain('name="email"')
     expect(markup).toContain('name="system"')

@@ -1,19 +1,15 @@
 import { useEffect, useRef, useState } from 'react'
+import { siteContent } from '../content/site-content'
 
 type SectionLink = {
   id: string
   label: string
 }
 
-const sections: SectionLink[] = [
-  { id: 'benefits', label: 'Services' },
-  { id: 'platforms', label: 'Platforms' },
-  { id: 'how', label: 'Approach' },
-  { id: 'why', label: 'Why Ahzi' },
-  { id: 'outputs', label: 'Outcomes' },
-  { id: 'first-sprint', label: 'Engagement' },
-  { id: 'contact', label: 'Contact' },
-]
+const sections: SectionLink[] = siteContent.nav.map(({ label, target }) => ({
+  id: target.slice(1),
+  label,
+}))
 
 const activeSectionRatio = 0.35
 

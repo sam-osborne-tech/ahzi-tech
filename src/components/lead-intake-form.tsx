@@ -13,6 +13,7 @@ import {
 import { foregroundHoverClass } from '../lib/style-classes'
 
 type LeadIntakeFormProps = {
+  formTitle: string
   onPrepareDraft: (mailTo: string) => boolean
 }
 
@@ -151,16 +152,14 @@ function SelectField({
   )
 }
 
-function FormHeader() {
+function FormHeader({ title }: { title: string }) {
   return (
     <div className="flex items-start gap-3">
       <span className="grid h-10 w-10 shrink-0 place-items-center rounded-md bg-[var(--accent-wash)] text-[var(--accent)]">
         <Mail aria-hidden="true" className="h-5 w-5" />
       </span>
       <div>
-        <h3 className="text-xl font-semibold text-[var(--foreground)]">
-          Request a workflow fit review
-        </h3>
+        <h3 className="text-xl font-semibold text-[var(--foreground)]">{title}</h3>
         <p className="mt-2 text-sm leading-6 text-[var(--foreground-muted)]">
           Share enough context for a specific first reply. Required fields are marked.
         </p>
@@ -359,7 +358,7 @@ function PrivacyNote() {
   )
 }
 
-export function LeadIntakeForm({ onPrepareDraft }: LeadIntakeFormProps) {
+export function LeadIntakeForm({ formTitle, onPrepareDraft }: LeadIntakeFormProps) {
   const {
     errors,
     formRef,
@@ -377,7 +376,7 @@ export function LeadIntakeForm({ onPrepareDraft }: LeadIntakeFormProps) {
       onSubmit={handleSubmit}
       ref={formRef}
     >
-      <FormHeader />
+      <FormHeader title={formTitle} />
 
       <IdentityFields
         errors={errors}
