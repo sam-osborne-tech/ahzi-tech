@@ -372,7 +372,7 @@ export function LeadIntakeForm({ onPrepareDraft }: LeadIntakeFormProps) {
 
   return (
     <form
-      className="rounded-md border border-[var(--line)] bg-[var(--surface)] p-5 shadow-[var(--panel-shadow)] sm:p-7"
+      className="photo-card rounded-md border border-[var(--line)] p-5 shadow-[var(--panel-shadow)] sm:p-7"
       noValidate
       onSubmit={handleSubmit}
       ref={formRef}

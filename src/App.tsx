@@ -303,7 +303,7 @@ function HeroSignals() {
     >
       {signals.map(([label, value]) => (
         <div
-          className="flex min-h-14 items-center justify-between gap-3 rounded-md border border-[var(--line)] bg-[rgb(7_11_16_/_70%)] px-4 py-3 backdrop-blur"
+          className="photo-card flex min-h-14 items-center justify-between gap-3 rounded-md border border-[var(--line)] px-4 py-3 backdrop-blur"
           key={label}
         >
           <span className="text-sm text-[var(--foreground-muted)]">{label}</span>
@@ -334,7 +334,7 @@ function SectionPhoto({ height, src, width }: SitePhoto) {
 
 function HeroOutcomes() {
   return (
-    <div className="hidden rounded-md border border-[var(--line)] bg-[var(--surface)] p-7 shadow-[var(--panel-shadow)] lg:block">
+    <div className="photo-card hidden rounded-md border border-[var(--line)] p-7 shadow-[var(--panel-shadow)] lg:block">
       <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--foreground-subtle)]">
         Your first engagement delivers
       </div>
@@ -582,7 +582,7 @@ function App() {
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {audiences.map(({ text, title }) => (
               <article
-                className="min-h-36 rounded-md border border-[var(--line)] bg-[rgb(255_255_255_/_5%)] p-4"
+                className="photo-card min-h-36 rounded-md border border-[var(--line)] p-4"
                 key={title}
               >
                 <div className="text-base font-semibold text-[var(--foreground)]">{title}</div>
@@ -611,7 +611,7 @@ function App() {
           <div className="mt-12 grid gap-4 lg:grid-cols-5">
             {stackLayers.map(({ icon: Icon, number, text, title }) => (
               <article
-                className="rounded-md border border-[var(--line)] bg-[var(--surface)] p-5 shadow-[var(--panel-shadow)]"
+                className="photo-card rounded-md border border-[var(--line)] p-5 shadow-[var(--panel-shadow)]"
                 key={title}
               >
                 <div className="flex items-center justify-between gap-4">
@@ -660,7 +660,7 @@ function App() {
           <div className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
             {integrationPlatforms.map((platform) => (
               <article
-                className="group rounded-md border border-[var(--line)] bg-[rgb(255_255_255_/_5%)] p-5 shadow-[var(--panel-shadow)] transition hover:border-[var(--accent-border)] hover:bg-[rgb(255_255_255_/_7%)]"
+                className="photo-card photo-card-interactive group rounded-md border border-[var(--line)] p-5 shadow-[var(--panel-shadow)] transition hover:border-[var(--accent-border)]"
                 key={platform.name}
               >
                 <div className="flex min-h-28 flex-col justify-between">
@@ -709,7 +709,7 @@ function App() {
           <div className="grid gap-3">
             {sequence.map(([step, text], index) => (
               <div
-                className="grid items-start gap-4 rounded-md border border-[var(--ink-line)] bg-white/[0.035] p-5 sm:grid-cols-[9rem_1fr]"
+                className="photo-card grid items-start gap-4 rounded-md border border-[var(--ink-line)] p-5 sm:grid-cols-[9rem_1fr]"
                 key={step}
               >
                 <div className="space-y-2">
@@ -736,7 +736,7 @@ function App() {
       <section className="px-5 py-28 lg:py-44 sm:px-8" id="why">
         <SectionPhoto {...sectionPhotos.why} />
         <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[1fr_1fr] lg:items-center">
-          <div className="relative overflow-hidden rounded-md border border-[var(--line)] bg-[var(--surface)] p-7 shadow-[var(--panel-shadow)]">
+          <div className="photo-card relative overflow-hidden rounded-md border border-[var(--line)] p-7 shadow-[var(--panel-shadow)]">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgb(91_157_217_/_12%),transparent_34%),radial-gradient(circle_at_90%_30%,rgb(73_94_158_/_16%),transparent_32%)]" />
             <div className="relative grid gap-4">
               <div className="rounded-md border border-[var(--line)] bg-[rgb(7_11_16_/_72%)] p-5">
@@ -820,7 +820,7 @@ function App() {
           <div className="grid gap-4">
             {outcomes.map(({ code, icon: Icon, items, title }) => (
               <article
-                className="min-h-44 rounded-md border border-[var(--line)] bg-[var(--surface)] p-5 shadow-[var(--panel-shadow)]"
+                className="photo-card min-h-44 rounded-md border border-[var(--line)] p-5 shadow-[var(--panel-shadow)]"
                 key={title}
               >
                 <div className="flex items-start gap-4">
@@ -880,7 +880,7 @@ function App() {
                 width={insetPhotos.firstSprint.width}
               />
             </figure>
-            <div className="rounded-md border border-[var(--line)] bg-[rgb(255_255_255_/_5%)] p-5">
+            <div className="photo-card rounded-md border border-[var(--line)] p-5">
               <div className="text-sm uppercase tracking-[0.16em] text-[var(--foreground-subtle)]">
                 Starting point
               </div>
@@ -888,7 +888,7 @@ function App() {
                 A business-critical workflow has clear upside, but the data, systems, controls, and ownership are not ready to ship.
               </p>
             </div>
-            <div className="rounded-md border border-[var(--line)] bg-[rgb(255_255_255_/_5%)] p-5">
+            <div className="photo-card rounded-md border border-[var(--line)] p-5">
               <div className="text-sm uppercase tracking-[0.16em] text-[var(--foreground-subtle)]">
                 What you leave with
               </div>
@@ -925,7 +925,7 @@ function App() {
             <p className="mt-5 max-w-2xl text-lg leading-8 text-[var(--foreground-muted)]">
               Built for operators, product teams, and CRM leaders with a high-volume intake, review, document, or data workflow that is costly to run manually and hard to move into production.
             </p>
-            <div className="mt-8 rounded-md border border-[var(--line)] bg-[rgb(255_255_255_/_5%)] p-5">
+            <div className="photo-card mt-8 rounded-md border border-[var(--line)] p-5">
               <div className="text-sm font-semibold uppercase tracking-[0.14em] text-[var(--accent-muted)]">
                 The first reply covers
               </div>

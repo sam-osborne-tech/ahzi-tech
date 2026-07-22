@@ -9,6 +9,9 @@
   --foreground-muted: #b8c4e0;
   --foreground-subtle: #7180a5;
   --surface: rgb(12 18 42 / 78%);
+  --photo-card-surface: #0c122a;
+  --photo-card-hover-surface: #111936;
+  --photo-card-ink-surface: #151228;
   --line: rgb(148 163 208 / 20%);
   --ink: #0d0920;
   --ink-foreground: #f8f4ff;
@@ -297,6 +300,18 @@ section[id] {
     rgb(5 6 16 / var(--section-photo-overlay-alpha)) 72%,
     var(--background) 100%
   );
+}
+
+.photo-card {
+  background: var(--photo-card-surface);
+}
+
+.photo-card-interactive:is(:hover, :focus-within) {
+  background: var(--photo-card-hover-surface);
+}
+
+#how .photo-card {
+  background: var(--photo-card-ink-surface);
 }
 
 #how .section-photo {

@@ -33,6 +33,20 @@ const expectedBackgrounds = [
   ['contact', sectionPhotos.contact],
 ] as const
 
+const expectedPhotoCardCounts = [
+  ['top', 5],
+  ['audiences', 4],
+  ['benefits', 5],
+  ['platforms', 10],
+  ['how', 3],
+  ['why', 1],
+  ['outputs', 5],
+  ['first-sprint', 2],
+  ['contact', 2],
+] as const
+
+const minimumPhotoCardOpacity = 1
+
 beforeAll(async () => {
   await build({
     build: { outDir: buildDirectory },
@@ -79,6 +93,42 @@ function treatmentContribution(scope: string) {
   const overlayAlpha = value('section-photo-overlay-alpha', '%') / 100
 
   return brightness * opacity * (1 - overlayAlpha)
+}
+
+function customProperty(name: string) {
+  const match = styles.match(new RegExp(`--${name}:\\s*([^;]+);`))
+
+  expect(match, `Missing --${name}`).not.toBeNull()
+  return match?.[1].trim() ?? ''
+}
+
+function colorOpacity(value: string) {
+  if (/^#[\da-f]{3,8}$/i.test(value)) {
+    return value.length === 5 || value.length === 9
+      ? Number.parseInt(value.slice(-2), 16) / 255
+      : 1
+  }
+
+  const alpha = value.match(/\/\s*([\d.]+)(%)?\s*\)/)
+  if (!alpha) return 1
+
+  const parsed = Number(alpha[1])
+  return alpha[2] ? parsed / 100 : parsed
+}
+
+function cssRule(selector: string) {
+  const start = styles.indexOf(`${selector} {`)
+  const end = styles.indexOf('}', start)
+
+  expect(start, `Missing CSS rule for ${selector}`).toBeGreaterThanOrEqual(0)
+  expect(end, `Unclosed CSS rule for ${selector}`).toBeGreaterThan(start)
+  return styles.slice(start, end + 1)
+}
+
+function photoCardClassNames(section: string) {
+  return [...section.matchAll(/<(?:article|div|form)\b[^>]*class="([^"]*)"/g)]
+    .map((match) => match[1])
+    .filter((className) => className.split(/\s+/).includes('photo-card'))
 }
 
 describe('stock image backgrounds', () => {
@@ -141,5 +191,37 @@ describe('stock image backgrounds', () => {
     expect(styles).toContain('opacity: var(--section-photo-opacity)')
     expect(styles).toContain('rgb(5 6 16 / var(--section-photo-overlay-alpha))')
     expect(styles).toContain('object-fit: cover')
+  })
+
+  it('keeps every content card over photography effectively opaque', () => {
+    const markup = renderToStaticMarkup(createElement(App))
+
+    for (const [sectionId, expectedCount] of expectedPhotoCardCounts) {
+      const classNames = photoCardClassNames(renderedSection(markup, sectionId))
+
+      expect(classNames, `${sectionId} photo card inventory`).toHaveLength(expectedCount)
+      for (const className of classNames) {
+        expect(className, `${sectionId} must not override the solid card surface`).not.toMatch(
+          /(?:^|\s)(?:bg-|hover:bg-|focus(?:-within)?:bg-)/,
+        )
+      }
+    }
+
+    for (const token of [
+      'photo-card-surface',
+      'photo-card-hover-surface',
+      'photo-card-ink-surface',
+    ]) {
+      expect(colorOpacity(customProperty(token)), `--${token} opacity`).toBeGreaterThanOrEqual(
+        minimumPhotoCardOpacity,
+      )
+    }
+
+    expect(cssRule('.photo-card')).toContain('background: var(--photo-card-surface)')
+    expect(cssRule('#how .photo-card')).toContain('background: var(--photo-card-ink-surface)')
+    expect(cssRule('.photo-card-interactive:is(:hover, :focus-within)')).toContain(
+      'background: var(--photo-card-hover-surface)',
+    )
+    expect(cssRule('.ai-pipeline__node')).toContain('fill: rgb(255 255 255 / 4%)')
   })
 })
