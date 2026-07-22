@@ -46,6 +46,7 @@ const expectedPhotoCardCounts = [
 ] as const
 
 const minimumPhotoCardOpacity = 1
+const minimumTextContrast = 4.5
 
 beforeAll(async () => {
   await build({
@@ -114,6 +115,91 @@ function colorOpacity(value: string) {
 
   const parsed = Number(alpha[1])
   return alpha[2] ? parsed / 100 : parsed
+}
+
+function finalLinearGradient(value: string) {
+  const start = value.lastIndexOf('linear-gradient(')
+
+  expect(start, 'Missing opaque base linear gradient').toBeGreaterThanOrEqual(0)
+  if (start < 0) return ''
+
+  const openingParenthesis = value.indexOf('(', start)
+  let depth = 0
+  for (let index = openingParenthesis; index < value.length; index += 1) {
+    if (value[index] === '(') depth += 1
+    if (value[index] === ')') depth -= 1
+    if (depth === 0) return value.slice(start, index + 1)
+  }
+
+  throw new Error('Unclosed base linear gradient')
+}
+
+function gradientBaseOpacity(value: string) {
+  const gradient = finalLinearGradient(value)
+  const referencedTokens = [...gradient.matchAll(/var\(--([^)]+)\)/g)].map(
+    (match) => match[1],
+  )
+
+  expect(gradient).not.toContain('transparent')
+  expect(gradient).not.toMatch(/(?:rgba|hsla)\(/)
+  expect(gradient.match(/color-mix\(/g)?.length ?? 0).toBeGreaterThanOrEqual(2)
+  expect(new Set(referencedTokens).size).toBeGreaterThanOrEqual(3)
+
+  return Math.min(...referencedTokens.map((token) => colorOpacity(customProperty(token))))
+}
+
+type Rgb = [number, number, number]
+
+function tokenRgb(name: string): Rgb {
+  const value = customProperty(name)
+
+  expect(value, `--${name} must be an opaque six-digit color`).toMatch(/^#[\da-f]{6}$/i)
+  return [
+    Number.parseInt(value.slice(1, 3), 16),
+    Number.parseInt(value.slice(3, 5), 16),
+    Number.parseInt(value.slice(5, 7), 16),
+  ]
+}
+
+function mixRgb(first: Rgb, firstPercent: number, second: Rgb): Rgb {
+  const firstWeight = firstPercent / 100
+
+  return first.map((channel, index) =>
+    channel * firstWeight + second[index] * (1 - firstWeight),
+  ) as Rgb
+}
+
+function luminance([red, green, blue]: Rgb) {
+  const linear = [red, green, blue].map((channel) => {
+    const normalized = channel / 255
+    return normalized <= 0.04045
+      ? normalized / 12.92
+      : ((normalized + 0.055) / 1.055) ** 2.4
+  })
+
+  return linear[0] * 0.2126 + linear[1] * 0.7152 + linear[2] * 0.0722
+}
+
+function contrastRatio(first: Rgb, second: Rgb) {
+  const lighter = Math.max(luminance(first), luminance(second))
+  const darker = Math.min(luminance(first), luminance(second))
+  return (lighter + 0.05) / (darker + 0.05)
+}
+
+function gradientBaseColors(value: string) {
+  const gradient = finalLinearGradient(value)
+  const mixPattern =
+    /color-mix\(in srgb,\s*var\(--([^)]+)\)\s*([\d.]+)%,\s*var\(--([^)]+)\)\)/g
+  const mixedColors = [...gradient.matchAll(mixPattern)].map((match) =>
+    mixRgb(tokenRgb(match[1]), Number(match[2]), tokenRgb(match[3])),
+  )
+  const directColors = [
+    ...gradient
+      .replace(mixPattern, '')
+      .matchAll(/var\(--([^)]+)\)/g),
+  ].map((match) => tokenRgb(match[1]))
+
+  return [...mixedColors, ...directColors]
 }
 
 function cssRule(selector: string) {
@@ -193,7 +279,7 @@ describe('stock image backgrounds', () => {
     expect(styles).toContain('object-fit: cover')
   })
 
-  it('keeps every content card over photography effectively opaque', () => {
+  it('keeps every content card over photography opaque with layered palette gradients', () => {
     const markup = renderToStaticMarkup(createElement(App))
 
     for (const [sectionId, expectedCount] of expectedPhotoCardCounts) {
@@ -212,9 +298,22 @@ describe('stock image backgrounds', () => {
       'photo-card-hover-surface',
       'photo-card-ink-surface',
     ]) {
-      expect(colorOpacity(customProperty(token)), `--${token} opacity`).toBeGreaterThanOrEqual(
+      const gradient = customProperty(token)
+
+      expect(gradient.match(/(?:radial|linear)-gradient\(/g)?.length ?? 0).toBeGreaterThanOrEqual(
+        2,
+      )
+      expect(gradientBaseOpacity(gradient), `--${token} base opacity`).toBeGreaterThanOrEqual(
         minimumPhotoCardOpacity,
       )
+
+      const textColor = token === 'photo-card-ink-surface'
+        ? tokenRgb('ink-muted')
+        : tokenRgb('foreground-muted')
+      for (const backgroundColor of gradientBaseColors(gradient)) {
+        expect(contrastRatio(textColor, backgroundColor), `--${token} text contrast`)
+          .toBeGreaterThanOrEqual(minimumTextContrast)
+      }
     }
 
     expect(cssRule('.photo-card')).toContain('background: var(--photo-card-surface)')

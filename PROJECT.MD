@@ -23,7 +23,7 @@ Commands: `npm run build` (tsc + vite), `npm run lint` (eslint), `npm run previe
 
 ## Design system
 
-Calm dark professional, Tribe.ai-inspired scroll storytelling. Single accent `--accent: #5b9dd9` plus gray-blue muted tones and neutrals in `src/index.css` `:root`. No neon, no magenta, no bright green, no glow shadows, no arcade styling; all of that was shipped once and explicitly removed by Sam's direction. Shared tint variables `--accent-border` and `--accent-wash` drive borders and washes; do not hardcode new rgb accents.
+Calm dark professional, Tribe.ai-inspired scroll storytelling. Single accent `--accent: #5b9dd9` plus gray-blue muted tones and neutrals in `src/index.css` `:root`. No neon, no magenta, no bright green, no glow shadows, no arcade styling; all of that was shipped once and explicitly removed by Sam's direction. Shared tint variables `--accent-border` and `--accent-wash` drive borders and washes; do not hardcode new rgb accents. Content cards over photography use the shared opaque layered `--photo-card-*` gradients, never a flat navy fill or translucent glass surface; photography stays visible around the card bounds.
 
 ## Reveal state machine (do not regress this)
 

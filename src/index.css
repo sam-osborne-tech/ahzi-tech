@@ -9,9 +9,30 @@
   --foreground-muted: #b8c4e0;
   --foreground-subtle: #7180a5;
   --surface: rgb(12 18 42 / 78%);
-  --photo-card-surface: #0c122a;
-  --photo-card-hover-surface: #111936;
-  --photo-card-ink-surface: #151228;
+  --photo-card-surface:
+    radial-gradient(circle at 86% 0%, var(--accent-wash), transparent 44%),
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--background-soft) 78%, var(--accent-muted)) 0%,
+      color-mix(in srgb, var(--background-soft) 72%, var(--ink)) 54%,
+      color-mix(in srgb, var(--background-soft) 82%, var(--accent)) 100%
+    );
+  --photo-card-hover-surface:
+    radial-gradient(circle at 82% 0%, var(--accent-wash), transparent 48%),
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--background-soft) 72%, var(--accent-muted)) 0%,
+      color-mix(in srgb, var(--background-soft) 68%, var(--ink)) 54%,
+      color-mix(in srgb, var(--background-soft) 76%, var(--accent)) 100%
+    );
+  --photo-card-ink-surface:
+    radial-gradient(circle at 14% 0%, var(--accent-wash), transparent 44%),
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--ink) 76%, var(--accent-muted)) 0%,
+      color-mix(in srgb, var(--ink) 88%, var(--background-soft)) 54%,
+      color-mix(in srgb, var(--ink) 80%, var(--accent)) 100%
+    );
   --line: rgb(148 163 208 / 20%);
   --ink: #0d0920;
   --ink-foreground: #f8f4ff;
@@ -304,6 +325,10 @@ section[id] {
 
 .photo-card {
   background: var(--photo-card-surface);
+}
+
+.photo-card:focus-within {
+  border-color: var(--accent-border);
 }
 
 .photo-card-interactive:is(:hover, :focus-within) {
