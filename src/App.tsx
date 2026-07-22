@@ -7,8 +7,6 @@ import {
   FileCheck2,
   Gauge,
   Layers3,
-  Mail,
-  Phone,
   Route,
   ShieldCheck,
   Sparkles,
@@ -30,6 +28,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { motion } from 'motion/react'
 import { AgentChat, type ProtectedMailToHandler } from './components/agent-chat'
 import { AiPipeline } from './components/ai-pipeline'
+import { LeadIntakeForm } from './components/lead-intake-form'
 import { ScrollProgress } from './components/scroll-progress'
 import { useSectionReveals } from './components/use-section-reveals'
 import { Badge } from './components/ui/badge'
@@ -38,28 +37,9 @@ import {
   footerLinkClass,
   foregroundHoverClass,
 } from './lib/style-classes'
+import { openMailTo, phoneTo } from './lib/contact'
 
-const contactEmailParts = ['admin', 'ahzi.tech'] as const
-const contactPhone = '+14702961095'
-const contactPhoneDisplay = '(470) 296-1095'
-const phoneTo = `tel:${contactPhone}`
 const trustedContactDelayMs = 900
-
-const getContactEmail = () => contactEmailParts.join('@')
-
-const buildMailTo = (subject: string, body?: string) => {
-  const params = new URLSearchParams({ subject })
-
-  if (body) {
-    params.set('body', body)
-  }
-
-  return `mailto:${getContactEmail()}?${params.toString()}`
-}
-
-const openMailTo = (subject = 'AI consulting conversation', body?: string) => {
-  window.location.href = buildMailTo(subject, body)
-}
 
 const signals = [
   ['Opportunity', 'Mapped'],
@@ -474,6 +454,13 @@ function App() {
     }
   }, [])
 
+  const contactIsReady = useCallback(
+    () =>
+      humanInteractionRef.current &&
+      window.performance.now() - pageReadyAtRef.current >= trustedContactDelayMs,
+    [],
+  )
+
   const openAgent = (event: MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault()
     restoreFocusRef.current = event.currentTarget
@@ -483,22 +470,29 @@ function App() {
   const openProtectedMailTo = useCallback<ProtectedMailToHandler>((event, subject, body) => {
     event.preventDefault()
 
-    const pageHasSettled =
-      window.performance.now() - pageReadyAtRef.current >= trustedContactDelayMs
-    const hasTrustedClick = event.nativeEvent.isTrusted && humanInteractionRef.current
+    const hasTrustedClick = event.nativeEvent.isTrusted && contactIsReady()
 
-    if (!hasTrustedClick || !pageHasSettled) {
+    if (!hasTrustedClick) {
       setContactNotice('Give the page a moment, then use the contact button again.')
+      setIsAgentOpen(false)
+      window.location.hash = 'contact'
       return
     }
 
     setContactNotice('')
     openMailTo(subject, body)
-  }, [])
+  }, [contactIsReady])
 
-  const openEmail = (event: MouseEvent<HTMLAnchorElement>) => {
-    openProtectedMailTo(event)
-  }
+  const prepareLeadDraft = useCallback(
+    (mailTo: string) => {
+      if (!contactIsReady()) return false
+
+      setContactNotice('')
+      window.location.href = mailTo
+      return true
+    },
+    [contactIsReady],
+  )
 
   return (
     <main className="arcade-shell min-h-screen overflow-hidden bg-[var(--background)] text-[var(--foreground)]">
@@ -524,7 +518,7 @@ function App() {
               Why Ahzi
             </a>
             <a className={foregroundHoverClass} href="#contact">
-              Contact
+              Workflow review
             </a>
           </nav>
           <Button
@@ -564,15 +558,9 @@ function App() {
               Ahzi builds agents, copilots, and document extraction pipelines inside your CRM and operations stack, and ships them with the evaluation evidence to clear production review.
             </p>
             <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-              <Button
-                aria-controls="ahzi-agent-panel"
-                aria-expanded={isAgentOpen}
-                href="#agent"
-                onClick={openAgent}
-                size="lg"
-              >
-                <Bot aria-hidden="true" className="h-5 w-5" />
-                Start a conversation
+              <Button href="#contact" size="lg">
+                <Route aria-hidden="true" className="h-5 w-5" />
+                Request a workflow fit review
               </Button>
               <Button href="#benefits" size="lg" variant="outline">
                 See the approach
@@ -643,15 +631,9 @@ function App() {
             ))}
           </div>
           <div className="mt-10 flex justify-center">
-            <Button
-              aria-controls="ahzi-agent-panel"
-              aria-expanded={isAgentOpen}
-              href="#agent"
-              onClick={openAgent}
-              size="lg"
-            >
-              <Bot aria-hidden="true" className="h-5 w-5" />
-              Discuss your workflow
+            <Button href="#contact" size="lg">
+              <Route aria-hidden="true" className="h-5 w-5" />
+              Check your workflow fit
             </Button>
           </div>
         </div>
@@ -809,9 +791,9 @@ function App() {
               One engineer-led thread runs from the opportunity map to the release gate. No handoff between a strategy deck and a delivery team.
             </p>
             <div className="mt-10">
-              <Button href="#contact" onClick={openEmail} size="lg">
-                <Mail aria-hidden="true" className="h-5 w-5" />
-                Start a conversation
+              <Button href="#contact" size="lg">
+                <Route aria-hidden="true" className="h-5 w-5" />
+                Request a workflow review
               </Button>
             </div>
           </div>
@@ -914,15 +896,12 @@ function App() {
               </p>
             </div>
             <Button
-              aria-controls="ahzi-agent-panel"
-              aria-expanded={isAgentOpen}
               className="w-full justify-center sm:w-fit"
-              href="#agent"
-              onClick={openAgent}
+              href="#contact"
               size="lg"
             >
-              <Bot aria-hidden="true" className="h-5 w-5" />
-              Chat with Ahzi
+              <Route aria-hidden="true" className="h-5 w-5" />
+              Review this workflow
             </Button>
           </div>
         </div>
@@ -932,38 +911,49 @@ function App() {
         className="border-b border-[var(--line)] bg-[var(--background-soft)] px-5 py-28 lg:py-44 sm:px-8"
         id="contact"
       >
-        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1fr_auto] lg:items-center">
+        <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.82fr_1.18fr] lg:items-start">
           <div>
             <Badge>
-              <Mail aria-hidden="true" className="h-4 w-4" />
-              Next step
+              <Route aria-hidden="true" className="h-4 w-4" />
+              Workflow fit review
             </Badge>
             <h2 className="arcade-section-title mt-6 max-w-3xl text-4xl font-semibold leading-tight text-[var(--foreground)] sm:text-5xl">
-              Bring the workflow. Leave with a path to production.
+              See if one workflow is worth building.
             </h2>
             <p className="mt-5 max-w-2xl text-lg leading-8 text-[var(--foreground-muted)]">
-              Start a chat or contact Ahzi directly. The first reply will focus on the business result, the system underneath it, and what should happen next.
+              Built for operators, product teams, and CRM leaders with a high-volume intake, review, document, or data workflow that is costly to run manually and hard to move into production.
             </p>
-          </div>
-          <div className="flex w-full flex-col gap-4 sm:w-auto sm:min-w-80">
-            <Button className="w-full justify-center" href="#contact" onClick={openEmail} size="lg">
-              <Mail aria-hidden="true" className="h-5 w-5" />
-              Email Ahzi
-              <ArrowUpRight aria-hidden="true" className="h-5 w-5" />
-            </Button>
-            <Button className="w-full justify-center" href={phoneTo} size="lg" variant="outline">
-              <Phone aria-hidden="true" className="h-5 w-5" />
-              Call {contactPhoneDisplay}
-            </Button>
-            <div className="grid gap-2 text-sm text-[var(--foreground-muted)]">
-              <span>
-                {contactNotice ||
-                  'Send the workflow, owner, and timing so the first reply can be specific.'}
-              </span>
-              <a className={footerLinkClass} href={phoneTo}>
-                {contactPhoneDisplay}
-              </a>
+            <div className="mt-8 rounded-md border border-[var(--line)] bg-[rgb(255_255_255_/_5%)] p-5">
+              <div className="text-sm font-semibold uppercase tracking-[0.14em] text-[var(--accent-muted)]">
+                The first reply covers
+              </div>
+              <ul className="mt-4 grid gap-3 text-sm leading-6 text-[var(--foreground-muted)]">
+                {[
+                  'Whether the workflow fits a focused first engagement',
+                  'The production blocker worth testing first',
+                  'The next useful step based on your system and timing',
+                ].map((item) => (
+                  <li className="flex items-start gap-3" key={item}>
+                    <BadgeCheck
+                      aria-hidden="true"
+                      className="mt-1 h-4 w-4 shrink-0 text-[var(--accent-muted)]"
+                    />
+                    {item}
+                  </li>
+                ))}
+              </ul>
             </div>
+          </div>
+          <div>
+            {contactNotice ? (
+              <div
+                className="mb-4 rounded-md border border-[var(--accent-border)] bg-[var(--accent-wash)] p-4 text-sm text-[var(--foreground)]"
+                role="alert"
+              >
+                {contactNotice}
+              </div>
+            ) : null}
+            <LeadIntakeForm onPrepareDraft={prepareLeadDraft} />
           </div>
         </div>
       </section>
@@ -972,7 +962,7 @@ function App() {
         <div className="mx-auto flex max-w-7xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <span>Ahzi // Enterprise AI that ships.</span>
           <a className={footerLinkClass} href="#contact">
-            Contact Ahzi
+            Request a workflow review
           </a>
         </div>
       </footer>

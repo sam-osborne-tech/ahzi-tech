@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="Ahzi builds agents, copilots, and document extraction pipelines inside CRM and operations stacks, shipped with evaluation evidence to reach production."
+      content="Request an AI workflow fit review from Ahzi. Built for operators, product teams, and CRM leaders moving high-volume workflows into production."
     />
     <meta name="theme-color" content="#050610" />
     <meta property="og:title" content="Ahzi | Enterprise AI that ships" />
     <meta
       property="og:description"
-      content="Agents, copilots, and extraction pipelines built into your CRM and operations stack, with accuracy measured on your records."
+      content="See whether one high-value CRM, document, or operations workflow is ready for a focused AI engagement."
     />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://ahzi.tech/" />
@@ -26,7 +26,7 @@
     <meta name="twitter:title" content="Ahzi | Enterprise AI that ships" />
     <meta
       name="twitter:description"
-      content="Agents, copilots, and extraction pipelines built into your CRM and operations stack, with accuracy measured on your records."
+      content="See whether one high-value CRM, document, or operations workflow is ready for a focused AI engagement."
     />
     <meta name="twitter:image" content="https://ahzi.tech/ahzi-social.png" />
     <meta
@@ -38,20 +38,41 @@
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
-        "@type": "Organization",
-        "name": "Ahzi",
-        "url": "https://ahzi.tech/",
-        "logo": "https://ahzi.tech/ahzi-logo.png",
-        "description": "Agents, copilots, and document extraction pipelines built into CRM and operations stacks, with accuracy measured on customer records.",
-        "telephone": "+1-470-296-1095",
-        "areaServed": "US",
-        "knowsAbout": [
-          "Enterprise AI strategy",
-          "AI product engineering",
-          "CRM readiness",
-          "AI workflow automation",
-          "Model evaluation",
-          "AI adoption"
+        "@graph": [
+          {
+            "@type": "Organization",
+            "@id": "https://ahzi.tech/#organization",
+            "name": "Ahzi",
+            "url": "https://ahzi.tech/",
+            "logo": "https://ahzi.tech/ahzi-logo.png",
+            "description": "Agents, copilots, and document extraction pipelines built into CRM and operations stacks, with accuracy measured on customer records.",
+            "telephone": "+1-470-296-1095",
+            "areaServed": "US",
+            "knowsAbout": [
+              "Enterprise AI strategy",
+              "AI product engineering",
+              "CRM readiness",
+              "AI workflow automation",
+              "Model evaluation",
+              "AI adoption"
+            ]
+          },
+          {
+            "@type": "Service",
+            "@id": "https://ahzi.tech/#workflow-fit-review",
+            "name": "AI workflow fit review",
+            "serviceType": "Enterprise AI workflow assessment",
+            "url": "https://ahzi.tech/#contact",
+            "provider": {
+              "@id": "https://ahzi.tech/#organization"
+            },
+            "areaServed": "US",
+            "audience": {
+              "@type": "BusinessAudience",
+              "audienceType": "Business operators, product teams, and CRM leaders"
+            },
+            "description": "A focused review of a high-volume CRM, document, intake, review, or operations workflow to identify fit, the first production blocker to test, and the next useful step."
+          }
         ]
       }
     </script>
