@@ -264,6 +264,10 @@ section[id] {
 /* Backdrop photography: blue duotone, heavily darkened, behind a gradient so
    text contrast stays AA on the near-black background. */
 .section-photo {
+  --section-photo-brightness: 0.62;
+  --section-photo-opacity: 0.44;
+  --section-photo-overlay-alpha: 42%;
+
   position: absolute;
   z-index: 0;
   inset: 0;
@@ -276,8 +280,10 @@ section[id] {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: grayscale(1) sepia(0.4) hue-rotate(170deg) saturate(1.3) brightness(0.42);
-  opacity: 0.26;
+  filter:
+    grayscale(1) sepia(0.4) hue-rotate(170deg) saturate(1.3)
+    brightness(var(--section-photo-brightness));
+  opacity: var(--section-photo-opacity);
 }
 
 .section-photo::after {
@@ -287,10 +293,18 @@ section[id] {
   background: linear-gradient(
     180deg,
     var(--background) 0%,
-    rgb(5 6 16 / 55%) 28%,
-    rgb(5 6 16 / 55%) 72%,
+    rgb(5 6 16 / var(--section-photo-overlay-alpha)) 28%,
+    rgb(5 6 16 / var(--section-photo-overlay-alpha)) 72%,
     var(--background) 100%
   );
+}
+
+@media (max-width: 639px) {
+  .section-photo {
+    --section-photo-brightness: 0.58;
+    --section-photo-opacity: 0.38;
+    --section-photo-overlay-alpha: 50%;
+  }
 }
 
 .inset-photo {
