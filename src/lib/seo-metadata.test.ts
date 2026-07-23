@@ -17,13 +17,13 @@ function structuredDataFromIndex() {
 }
 
 describe('SEO metadata', () => {
-  it('publishes valid structured data for the workflow fit review', () => {
+  it('publishes valid structured data for the workflow selection offering', () => {
     const data = structuredDataFromIndex()
     const service = data['@graph'].find((entry: { '@type': string }) => entry['@type'] === 'Service')
 
     expect(service).toMatchObject({
-      '@id': 'https://ahzi.tech/#workflow-fit-review',
-      name: 'AI workflow fit review',
+      '@id': 'https://ahzi.tech/#workflow-selection-review',
+      name: 'Workflow Selection Review',
       provider: { '@id': 'https://ahzi.tech/#organization' },
       url: 'https://ahzi.tech/#contact',
     })

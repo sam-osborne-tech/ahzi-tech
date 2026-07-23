@@ -335,17 +335,17 @@ section[id] {
   background: var(--photo-card-hover-surface);
 }
 
-#how .photo-card {
+#agent-lab .photo-card {
   background: var(--photo-card-ink-surface);
 }
 
-#how .section-photo {
+#agent-lab .section-photo {
   --section-photo-brightness: 0.5;
   --section-photo-opacity: 0.18;
   --section-photo-overlay-alpha: 58%;
 }
 
-#how .section-photo::after {
+#agent-lab .section-photo::after {
   background: linear-gradient(
     180deg,
     var(--ink) 0%,
@@ -355,7 +355,7 @@ section[id] {
   );
 }
 
-#first-sprint .section-photo img {
+#engagement .section-photo img {
   object-position: center 42%;
 }
 
@@ -530,77 +530,6 @@ section[id] {
 @media (min-width: 1024px) {
   .scroll-dots {
     display: flex;
-  }
-}
-
-.ai-pipeline {
-  margin-top: 1.5rem;
-}
-
-.ai-pipeline svg {
-  width: 100%;
-  height: auto;
-}
-
-.ai-pipeline__link {
-  stroke: rgb(91 157 217 / 50%);
-  stroke-width: 1.6;
-  stroke-dasharray: 1;
-}
-
-.ai-pipeline__source {
-  fill: var(--accent-muted);
-}
-
-.ai-pipeline__packet {
-  fill: var(--accent);
-}
-
-.ai-pipeline__node {
-  fill: rgb(255 255 255 / 4%);
-  stroke: var(--line);
-  stroke-width: 1;
-}
-
-.ai-pipeline__label,
-.ai-pipeline__detail,
-.ai-pipeline__stage {
-  text-anchor: middle;
-  font-family: inherit;
-}
-
-.ai-pipeline__label {
-  fill: var(--ink-foreground);
-  font-size: 15px;
-  font-weight: 600;
-}
-
-.ai-pipeline__detail {
-  fill: var(--ink-muted);
-  font-size: 12px;
-}
-
-.ai-pipeline__stage {
-  fill: var(--accent);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-
-.stream-caret {
-  display: inline-block;
-  width: 0.55em;
-  height: 1em;
-  margin-left: 0.1em;
-  vertical-align: text-bottom;
-  background: currentcolor;
-  animation: stream-caret-blink 0.8s steps(2, jump-none) infinite;
-}
-
-@keyframes stream-caret-blink {
-  50% {
-    opacity: 0.2;
   }
 }
 

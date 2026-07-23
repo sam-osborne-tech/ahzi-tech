@@ -231,6 +231,21 @@ function UseCaseDetail({
   )
 }
 
+export function StepFlow({ items }: { items: readonly string[] }) {
+  return (
+    <ol aria-label="Workflow sequence" className="grid gap-2 lg:grid-cols-5">
+      {items.map((item) => (
+        <li
+          className="relative rounded-md border border-[var(--line)] px-3 py-3 text-sm leading-5 text-[var(--foreground-muted)]"
+          key={item}
+        >
+          {item}
+        </li>
+      ))}
+    </ol>
+  )
+}
+
 export function UseCaseFlow({ useCase }: { useCase: UseCaseContent }) {
   return (
     <GradientCard className="p-6 sm:p-7">
@@ -238,24 +253,17 @@ export function UseCaseFlow({ useCase }: { useCase: UseCaseContent }) {
         {useCase.label}
       </div>
       <h3 className="mt-3 text-2xl font-semibold text-[var(--foreground)]">{useCase.title}</h3>
+      <div className="mt-6">
+        <StepFlow items={useCase.flow} />
+      </div>
       <dl className="mt-6 grid gap-3 lg:grid-cols-2">
-        <UseCaseDetail body={useCase.startingProblem} label="Starting problem" />
-        <UseCaseDetail body={useCase.systemsInvolved} label="Systems involved" />
-        <UseCaseDetail body={useCase.aiHandles} label="What the AI handles" />
-        <UseCaseDetail body={useCase.humanControls} label="What humans control" />
-        <div className="lg:col-span-2">
-          <UseCaseDetail body={useCase.decisionEvidence} label="Decision evidence" />
-        </div>
+        <UseCaseDetail body={useCase.startingState} label="Starting state" />
+        <UseCaseDetail body={useCase.systemMap} label="System map" />
+        <UseCaseDetail body={useCase.agentBehavior} label="Agent behavior" />
+        <UseCaseDetail body={useCase.humanControls} label="Human controls" />
+        <UseCaseDetail body={useCase.exceptionPath} label="Exception path" />
+        <UseCaseDetail body={useCase.decisionEvidence} label="Decision evidence" />
       </dl>
-      {useCase.publicProof ? (
-        <p className="mt-4 rounded-md border border-[var(--accent-border)] bg-[var(--accent-wash)] px-4 py-3 text-sm leading-6 text-[var(--foreground)]">
-          {useCase.publicProof}
-        </p>
-      ) : null}
-      <Button className="mt-6" href={useCase.cta.target} variant="outline">
-        {useCase.cta.label}
-        <ArrowUpRight aria-hidden="true" className="h-5 w-5" />
-      </Button>
     </GradientCard>
   )
 }

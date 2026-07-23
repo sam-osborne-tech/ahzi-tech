@@ -1,6 +1,6 @@
 # Ahzi Tech
 
-A React site for Ahzi's forward-deployed enterprise AI consulting.
+A React showcase for Ahzi's productized agent builds, document intelligence, embedded copilots, and evaluation operations.
 
 ## Stack
 

@@ -12,14 +12,16 @@ Public marketing site for Ahzi LLC (Sam's Georgia LLC, S-Corp election) at https
 
 ## Stack and layout
 
-Vite + React 19 + TypeScript + Tailwind 4 (via `@tailwindcss/vite`), `motion` for the hero heading only.
+Vite + React 19 + TypeScript + Tailwind 4 (via `@tailwindcss/vite`), with `motion` for reduced-motion-aware hero and Agent Lab state transitions.
 
-- `src/App.tsx`: state and page composition for the header, seven-stage narrative, lead funnel, scroll progress, and scripted chat.
-- `src/content/site-content.ts`: typed marketing copy, use cases, proof, platform descriptions, and CTA routes.
-- `src/components/marketing-components.tsx`: shared section shells, headings, grids, gradient cards, use-case flows, proof lists, CTA blocks, and image treatments.
-- `src/components/site-sections.tsx`: focused business sections for promise, audience/problem, use cases, delivery, proof, first engagement, and conversion.
+- `src/App.tsx`: page composition for the header, focused narrative, lead funnel, and scroll progress.
+- `src/content/site-content.ts`: typed offerings, agent patterns, synthetic Agent Lab scenarios, deep use cases, proof, controls, and CTA routes.
+- `src/components/agent-lab.tsx`: manual synthetic run trace with scenario tabs, approval policy, human decision branch, evaluation evidence, keyboard navigation, and reduced-motion handling.
+- `src/components/agent-catalog.tsx`: accessible business-function filters and detailed buildable agent pattern disclosures.
+- `src/components/marketing-components.tsx`: shared section shells, headings, grids, gradient cards, workflow step flows, use-case flows, proof lists, CTA blocks, and image treatments.
+- `src/components/site-sections.tsx`: focused business sections for the promise, productized offerings, deep use cases, public proof and controls, engagement path, and conversion.
 - `src/index.css`: theme variables, reveal state machine CSS, photo treatment, all custom styling.
-- `src/components/`: `agent-chat.tsx` (scripted demo chat), `ai-pipeline.tsx` (scroll-assembled SVG pipeline), `scroll-progress.tsx` (top progress bar + section dots), `use-section-reveals.ts` (reveal state machine).
+- `src/components/`: `scroll-progress.tsx` provides the top progress bar and section dots; `use-section-reveals.ts` owns the reveal state machine.
 - `public/photos/`: self-hosted webp photography. `public/ahzi-social.png` is the OG card, `public/ahzi-logo.png` + `ahzi_logo_source.svg` the logo.
 
 Commands: `npm run build` (tsc + vite), `npm run lint` (eslint), `npm run preview -- --port 4173 --strictPort` for local preview of `dist/`. Both lint and build must be green before any commit.
@@ -51,27 +53,27 @@ Past defects this design exists to prevent (all shipped and hit by Sam before be
 - Concrete claims only: what Ahzi builds, for whom, with what stack, and the proof. No interchangeable consulting phrases ("unlock value", "workflows people actually use", "operating rhythm"). Sam calls that slop and has rejected it once already.
 - Never name clients or employers. Engagements are described concretely but anonymously ("a contract-intelligence run over 5,000+ agreements with population-level verification", "AI delivery inside a utility-scale enterprise").
 - No em dashes or en dashes anywhere, including site copy, commits, and this file.
-- The chat widget is a scripted demo. It must stay labeled "Scripted demo, not a live model" and must always end in a real handoff (Export brief mailto + phone link). Never let it pretend to be live AI or dead-end.
+- The Agent Lab is a synthetic interactive walkthrough. It must stay labeled as synthetic, never imply live model execution or customer data, require manual progression, and keep approval and exception branches inspectable.
 
 ## Contact wiring
 
-- Email: built at click time from protected parts in `src/lib/contact.ts` (obfuscation; anchors carry `#contact`/`#agent` hrefs until a trusted click). `src/components/use-protected-contact.ts` requires a trusted user event plus a 900ms page-settle before `mailto:` fires; synthetic clicks show a retry notice instead. That guard blocking automation is correct behavior, not a bug.
-- Phone: the protected number in `src/lib/contact.ts` is rendered as a `tel:` link in the chat footer.
-- All CTAs route to section anchors, the chat panel, mailto, or tel. Marketing routes are single-sourced in `src/content/site-content.ts`.
+- Email: built at submit time from protected parts in `src/lib/contact.ts`. `src/components/use-protected-contact.ts` requires a trusted user event plus a 900ms page-settle before `mailto:` fires; synthetic submissions show a retry notice instead. That guard blocking automation is correct behavior, not a bug.
+- The lead form validates and prepares a local email draft. It sends no network request and loads no analytics or third-party form script.
+- All marketing CTAs route to section anchors or the lead form. Marketing routes are single-sourced in `src/content/site-content.ts`.
 
 ## Photography
 
 Current images in `public/photos/` (self-hosted WebP, lazy loaded, explicit width/height, duotoned by `.section-photo`/`.inset-photo` CSS toward the calm blue behind a readability gradient):
 
 - `hero-san-francisco.webp`: backdrop, hero
-- `operations-containers.webp`: backdrop, operators strip (section aria-label "Who Ahzi helps")
-- `document-archive.webp`: backdrop, `#use-cases` (carries the extraction claim)
+- `operations-containers.webp`: backdrop, `#offerings`
+- `document-archive.webp`: backdrop, `#use-cases`
 - `platform-patch-panel.webp`: inset, `#proof`
-- `pipeline-circuit.webp`: subdued backdrop, `#how`
+- `pipeline-circuit.webp`: subdued backdrop, `#agent-lab`
 - `enterprise-racks.webp`: backdrop, `#proof`
-- `outputs-linotype.webp`: inset, `#proof`
-- `first-sprint-blueprints.webp`: backdrop, `#first-sprint`
-- `build-terminal.webp`: inset card, `#first-sprint`
+- `outputs-linotype.webp`: backdrop, `#agent-catalog`, and inset, `#proof`
+- `first-sprint-blueprints.webp`: backdrop, `#engagement`
+- `build-terminal.webp`: inset card, `#engagement`
 - `contact-cranes.webp`: backdrop, `#contact`
 
 Sourcing: Unsplash and Pexels block automated access (401/Cloudflare). Openverse (`api.openverse.org/v1/images/?q=...&license=cc0,pdm,by`) works; view every candidate before use, reject anything branded, dated, or cliche (handshakes, robot hands, masked-era shots). Licenses are credited in `README.md` under Photography; keep that section updated. CC BY needs the credit; avoid by-sa/nc/nd.
@@ -86,7 +88,7 @@ After every change, on the LIVE deployed site (not just preview):
 4. Verify reveals re-fire in BOTH directions (sample `reveal-in` class state and mid-transition opacities per section).
 5. Deploy is done only after live validation passes. Wait for the Pages run to complete, confirm the served bundle hash changed, and hard-reload (stale tabs have produced false readings).
 
-Local Canary headless on port 9223 is the sanctioned browser for this; Safari/Firefox have not been driven (safaridriver needs enabling), which is why the reveal system sticks to universally supported APIs.
+Use the native `user-browser` MCP for local visual verification when it is healthy. If it is unavailable, keep implementation and deterministic checks moving, do not open another browser context, and report the pixel-level visual gap.
 
 ## History pointers
 

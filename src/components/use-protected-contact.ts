@@ -1,14 +1,9 @@
-import type { Dispatch, SetStateAction } from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { openMailTo } from '../lib/contact'
-import type { ProtectedMailToHandler } from './agent-chat'
 
 const trustedContactDelayMs = 900
 const retryNotice = 'Give the page a moment, then use the contact button again.'
 
-export function useProtectedContact(
-  setIsAgentOpen: Dispatch<SetStateAction<boolean>>,
-) {
+export function useProtectedContact() {
   const [contactNotice, setContactNotice] = useState('')
   const humanInteractionRef = useRef(false)
   const pageReadyAtRef = useRef(0)
@@ -36,22 +31,6 @@ export function useProtectedContact(
     [],
   )
 
-  const openProtectedMailTo = useCallback<ProtectedMailToHandler>(
-    (event, subject, body) => {
-      event.preventDefault()
-      if (!event.nativeEvent.isTrusted || !contactIsReady()) {
-        setContactNotice(retryNotice)
-        setIsAgentOpen(false)
-        window.location.hash = 'contact'
-        return
-      }
-
-      setContactNotice('')
-      openMailTo(subject, body)
-    },
-    [contactIsReady, setIsAgentOpen],
-  )
-
   const prepareLeadDraft = useCallback(
     (mailTo: string) => {
       if (!contactIsReady()) {
@@ -66,5 +45,5 @@ export function useProtectedContact(
     [contactIsReady],
   )
 
-  return { contactNotice, openProtectedMailTo, prepareLeadDraft }
+  return { contactNotice, prepareLeadDraft }
 }

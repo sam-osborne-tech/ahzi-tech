@@ -119,7 +119,10 @@ describe('collectLeadAttribution', () => {
 
   it('omits same-site and invalid referrers', () => {
     expect(
-      collectLeadAttribution('https://ahzi.tech/?utm_source=direct', 'https://ahzi.tech/#how'),
+      collectLeadAttribution(
+        'https://ahzi.tech/?utm_source=direct',
+        'https://ahzi.tech/#agent-lab',
+      ),
     ).toEqual({
       campaign: { utm_source: 'direct' },
       landingPage: 'https://ahzi.tech/',

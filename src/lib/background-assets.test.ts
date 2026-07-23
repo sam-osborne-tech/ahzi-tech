@@ -23,21 +23,23 @@ const buildDirectory = mkdtempSync(join(tmpdir(), 'ahzi-assets-'))
 
 const expectedBackgrounds = [
   ['top', sectionPhotos.hero],
-  ['audiences', sectionPhotos.audiences],
+  ['agent-lab', sectionPhotos.approach],
+  ['offerings', sectionPhotos.audiences],
+  ['agent-catalog', sectionPhotos.outputs],
   ['use-cases', sectionPhotos.benefits],
-  ['how', sectionPhotos.approach],
   ['proof', sectionPhotos.why],
-  ['first-sprint', sectionPhotos.firstSprint],
+  ['engagement', sectionPhotos.firstSprint],
   ['contact', sectionPhotos.contact],
 ] as const
 
 const expectedPhotoCardCounts = [
-  ['top', 5],
-  ['audiences', 3],
+  ['top', 1],
+  ['agent-lab', 1],
+  ['offerings', 5],
+  ['agent-catalog', 7],
   ['use-cases', 3],
-  ['how', 3],
-  ['proof', 13],
-  ['first-sprint', 2],
+  ['proof', 5],
+  ['engagement', 3],
   ['contact', 2],
 ] as const
 
@@ -230,13 +232,13 @@ describe('stock image backgrounds', () => {
     }
 
     const proof = renderedSection(markup, 'proof')
-    const firstSprint = renderedSection(markup, 'first-sprint')
+    const engagement = renderedSection(markup, 'engagement')
 
     expect(proof.match(/class="inset-photo"/g)).toHaveLength(2)
     expect(proof).toContain(`src="${sectionPhotos.platforms.src}"`)
     expect(proof).toContain(`src="${sectionPhotos.outputs.src}"`)
-    expect(firstSprint).toContain('class="inset-photo"')
-    expect(firstSprint).toContain(`src="${insetPhotos.firstSprint.src}"`)
+    expect(engagement).toContain('class="inset-photo')
+    expect(engagement).toContain(`src="${insetPhotos.firstSprint.src}"`)
   })
 
   it('copies every image to the production build with relative Pages paths', () => {
@@ -318,10 +320,11 @@ describe('stock image backgrounds', () => {
     }
 
     expect(cssRule('.photo-card')).toContain('background: var(--photo-card-surface)')
-    expect(cssRule('#how .photo-card')).toContain('background: var(--photo-card-ink-surface)')
+    expect(cssRule('#agent-lab .photo-card')).toContain(
+      'background: var(--photo-card-ink-surface)',
+    )
     expect(cssRule('.photo-card-interactive:is(:hover, :focus-within)')).toContain(
       'background: var(--photo-card-hover-surface)',
     )
-    expect(cssRule('.ai-pipeline__node')).toContain('fill: rgb(255 255 255 / 4%)')
   })
 })

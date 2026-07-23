@@ -42,18 +42,19 @@ describe('marketing components', () => {
     expect(markup.match(/class="photo-card/g)).toHaveLength(2)
   })
 
-  it('renders every required use-case field and a contextual review route', () => {
+  it('renders every deep use-case field and its accessible workflow sequence', () => {
     const useCase = siteContent.useCases.items[0]
     const markup = renderToStaticMarkup(<UseCaseFlow useCase={useCase} />)
 
     expect(markup).toContain(useCase.label)
-    expect(markup).toContain(useCase.startingProblem)
-    expect(markup).toContain('Systems involved')
-    expect(markup).toContain('What the AI handles')
-    expect(markup).toContain('What humans control')
+    expect(markup).toContain(useCase.startingState)
+    expect(markup).toContain('System map')
+    expect(markup).toContain('Agent behavior')
+    expect(markup).toContain('Human controls')
+    expect(markup).toContain('Exception path')
     expect(markup).toContain('Decision evidence')
-    expect(markup).toContain('href="#contact"')
-    expect(markup).toContain(useCase.cta.label)
+    expect(markup).toContain('aria-label="Workflow sequence"')
+    useCase.flow.forEach((step) => expect(markup).toContain(step))
   })
 
   it('shares proof-list and CTA treatments without flattening their meaning', () => {
