@@ -53,7 +53,7 @@ Past defects this design exists to prevent (all shipped and hit by Sam before be
 - Concrete claims only: what Ahzi builds, for whom, with what stack, and the proof. No interchangeable consulting phrases ("unlock value", "workflows people actually use", "operating rhythm"). Sam calls that slop and has rejected it once already.
 - Never name clients or employers. Engagements are described concretely but anonymously ("a contract-intelligence run over 5,000+ agreements with population-level verification", "AI delivery inside a utility-scale enterprise").
 - No em dashes or en dashes anywhere, including site copy, commits, and this file.
-- The Agent Lab is a synthetic interactive walkthrough. It must stay labeled as synthetic, never imply live model execution or customer data, require manual progression, and keep approval and exception branches inspectable.
+- The Agent Lab uses sample records, requires manual progression, and keeps approval and exception branches inspectable. Describe the sample inputs directly; do not add defensive disclaimers about models, customer data, or production execution.
 
 ## Contact wiring
 

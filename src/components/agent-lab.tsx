@@ -71,7 +71,7 @@ function ScenarioTabs({
 
   return (
     <div
-      aria-label="Synthetic agent scenarios"
+      aria-label="Agent scenarios"
       className="grid gap-2 sm:grid-cols-3"
       role="tablist"
     >
@@ -164,7 +164,7 @@ function TraceList({
   stepIndex: number
 }) {
   return (
-    <ol aria-label="Synthetic agent run trace" className="grid gap-2">
+    <ol aria-label="Agent run trace" className="grid gap-2">
       {run.map((step, index) => {
         const Icon = stepIcons[step.kind]
         const current = index === stepIndex
@@ -209,7 +209,7 @@ function ApprovalActions({
         type="button"
       >
         <Check aria-hidden="true" className="h-4 w-4" />
-        Approve synthetic action
+        Approve action
       </button>
       <button
         className={`${controlButtonClass} border-[var(--line)] bg-[var(--surface)] text-[var(--foreground)]`}
@@ -217,7 +217,7 @@ function ApprovalActions({
         type="button"
       >
         <TriangleAlert aria-hidden="true" className="h-4 w-4" />
-        Route synthetic exception
+        Route exception
       </button>
     </div>
   )
@@ -315,10 +315,7 @@ export function AgentLab() {
     <SectionShell id="agent-lab" photo={sectionPhotos.approach} surface="ink">
       <div className="mx-auto max-w-7xl">
         <SectionHeading icon={Workflow} tone="ink" {...siteContent.agentLab.heading} />
-        <p className="mt-6 max-w-3xl rounded-md border border-[var(--ink-line)] px-4 py-3 text-sm leading-6 text-[var(--ink-muted)]">
-          {siteContent.agentLab.disclaimer}
-        </p>
-        <div className="mt-10">
+        <div className="mt-8">
           <ScenarioTabs activeId={state.scenarioId} dispatch={dispatch} />
           <PolicyControl dispatch={dispatch} policy={state.policy} />
         </div>

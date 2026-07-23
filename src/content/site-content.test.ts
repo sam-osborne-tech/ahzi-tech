@@ -31,6 +31,7 @@ function pageHeadings() {
 
 function offeringCopy(offering: OfferingContent) {
   return [
+    offering.summary,
     offering.forWho,
     offering.problem,
     offering.work,
@@ -43,11 +44,11 @@ function offeringCopy(offering: OfferingContent) {
 
 function agentCopy(agent: AgentPatternContent) {
   return [
-    agent.summary,
+    agent.outcome,
     agent.trigger,
     agent.readsFrom,
-    agent.workPerformed,
-    agent.writesActions,
+    agent.actions,
+    agent.writes,
     agent.humanGate,
     agent.evidence,
   ]
@@ -55,6 +56,7 @@ function agentCopy(agent: AgentPatternContent) {
 
 function useCaseCopy(useCase: UseCaseContent) {
   return [
+    useCase.summary,
     useCase.startingState,
     useCase.systemMap,
     useCase.agentBehavior,
@@ -70,7 +72,6 @@ function bodyCopy() {
     siteContent.hero.body,
     ...siteContent.hero.reviewOutputs,
     siteContent.agentLab.heading.body,
-    siteContent.agentLab.disclaimer,
     ...siteContent.agentLab.policies.flatMap(({ body, label }) => [label, body]),
     ...siteContent.agentLab.scenarios.flatMap((scenario) => [
       scenario.summary,
@@ -84,7 +85,6 @@ function bodyCopy() {
     siteContent.offerings.heading.body,
     ...siteContent.offerings.items.flatMap(offeringCopy),
     siteContent.agentCatalog.heading.body,
-    siteContent.agentCatalog.patternNote,
     ...siteContent.agentCatalog.items.flatMap(agentCopy),
     siteContent.useCases.heading.body,
     ...siteContent.useCases.items.flatMap(useCaseCopy),
@@ -94,7 +94,6 @@ function bodyCopy() {
     siteContent.engagement.heading.body,
     ...siteContent.engagement.steps.flatMap(({ body, title }) => [title, body]),
     siteContent.conversion.heading.body,
-    ...siteContent.conversion.replyCovers,
   ].filter(Boolean)
 }
 
@@ -125,8 +124,10 @@ function similarity(first: string, second: string) {
 }
 
 function assertCompleteOffering(offering: OfferingContent) {
+  expect(offering.id).toBeTruthy()
   expect(offering.label).toBeTruthy()
   expect(offering.title).toBeTruthy()
+  expect(offering.summary).toBeTruthy()
   expect(offering.forWho).toBeTruthy()
   expect(offering.problem).toBeTruthy()
   expect(offering.work).toBeTruthy()
@@ -137,19 +138,22 @@ function assertCompleteOffering(offering: OfferingContent) {
 }
 
 function assertCompleteAgent(agent: AgentPatternContent) {
-  expect(agent.status).toBe('Buildable agent pattern')
+  expect(agent.id).toBeTruthy()
   expect(agent.businessFunction).toBeTruthy()
+  expect(agent.outcome).toBeTruthy()
   expect(agent.trigger).toBeTruthy()
   expect(agent.readsFrom).toBeTruthy()
-  expect(agent.workPerformed).toBeTruthy()
-  expect(agent.writesActions).toBeTruthy()
+  expect(agent.actions).toBeTruthy()
+  expect(agent.writes).toBeTruthy()
   expect(agent.humanGate).toBeTruthy()
   expect(agent.evidence).toBeTruthy()
 }
 
 function assertCompleteUseCase(useCase: UseCaseContent) {
+  expect(useCase.id).toBeTruthy()
   expect(useCase.label).toBeTruthy()
   expect(useCase.title).toBeTruthy()
+  expect(useCase.summary).toBeTruthy()
   expect(useCase.startingState).toBeTruthy()
   expect(useCase.systemMap).toBeTruthy()
   expect(useCase.agentBehavior).toBeTruthy()
@@ -186,14 +190,13 @@ describe('site content', () => {
     siteContent.offerings.items.forEach(assertCompleteOffering)
   })
 
-  it('defines at least six complete agent patterns without deployment claims', () => {
+  it('defines at least six complete agents', () => {
     expect(siteContent.agentCatalog.items.length).toBeGreaterThanOrEqual(6)
     siteContent.agentCatalog.items.forEach(assertCompleteAgent)
   })
 
-  it('defines three synthetic Agent Lab scenarios with full run evidence', () => {
+  it('defines three sample Agent Lab scenarios with full run evidence', () => {
     expect(siteContent.agentLab.scenarios).toHaveLength(3)
-    expect(siteContent.agentLab.disclaimer).toMatch(/interactive synthetic walkthrough/i)
     for (const scenario of siteContent.agentLab.scenarios) {
       expect(scenario.trigger).toBeTruthy()
       expect(scenario.reads.length).toBeGreaterThanOrEqual(3)
@@ -207,6 +210,26 @@ describe('site content', () => {
   it('deepens exactly three use cases with controls and exception paths', () => {
     expect(siteContent.useCases.items).toHaveLength(3)
     siteContent.useCases.items.forEach(assertCompleteUseCase)
+  })
+
+  it('keeps disclosure groups compact while retaining every detail in the HTML', () => {
+    const markup = renderToStaticMarkup(createElement(App))
+    const disclosureIds = [
+      ...siteContent.offerings.items.map(({ id }) => id),
+      ...siteContent.agentCatalog.items.map(({ id }) => `agent-${id}`),
+      ...siteContent.useCases.items.map(({ id }) => id),
+    ]
+
+    expect(new Set(disclosureIds).size).toBe(disclosureIds.length)
+    expect(markup.match(/aria-expanded="false"/g)).toHaveLength(disclosureIds.length)
+    expect(markup).not.toContain('aria-expanded="true"')
+    disclosureIds.forEach((id) => {
+      expect(markup).toContain(`id="${id}"`)
+      expect(markup).toContain(`id="${id}-panel"`)
+    })
+    siteContent.useCases.items.forEach(({ decisionEvidence }) =>
+      expect(markup).toContain(decisionEvidence),
+    )
   })
 
   it('limits quantitative proof to the verified agreement population', () => {
@@ -224,6 +247,15 @@ describe('site content', () => {
       /\b(?:certified partner|guaranteed|industry-leading|best-in-class|cost savings|roi|accuracy rate)\b/i,
     )
     expect(copy).not.toMatch(/\$\s?\d|\d+\s?%/)
+  })
+
+  it('removes hedging and defensive AI meta-copy from public content', () => {
+    const copy = [...pageHeadings(), ...bodyCopy()].join('\n')
+
+    expect(copy).not.toMatch(
+      /\b(?:synthetic walkthrough|no model|not a live model|illustrative|example only|could|may|designed to|can help)\b/i,
+    )
+    expect(copy).not.toMatch(/\b(?:not claims? of|production execution|what the ui is not)\b/i)
   })
 
   it('renders the new information architecture in the intended order', () => {

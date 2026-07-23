@@ -16,6 +16,11 @@ const sectionSurfaceClasses = {
   soft: 'border-y border-[var(--line)] bg-[var(--background-soft)]',
 } as const
 
+const sectionSpacingClasses = {
+  compact: 'py-20 lg:py-28',
+  default: 'py-28 lg:py-44',
+} as const
+
 const gridColumnClasses = {
   2: 'lg:grid-cols-2',
   3: 'lg:grid-cols-3',
@@ -35,6 +40,7 @@ type SectionShellProps = {
   className?: string
   id: string
   photo: SitePhoto
+  spacing?: keyof typeof sectionSpacingClasses
   surface?: keyof typeof sectionSurfaceClasses
 }
 
@@ -52,13 +58,15 @@ export function SectionShell({
   className,
   id,
   photo,
+  spacing = 'default',
   surface = 'default',
 }: SectionShellProps) {
   return (
     <section
       aria-label={ariaLabel}
       className={cn(
-        'relative px-5 py-28 sm:px-8 lg:py-44',
+        'relative px-5 sm:px-8',
+        sectionSpacingClasses[spacing],
         sectionSurfaceClasses[surface],
         className,
       )}
@@ -248,15 +256,9 @@ export function StepFlow({ items }: { items: readonly string[] }) {
 
 export function UseCaseFlow({ useCase }: { useCase: UseCaseContent }) {
   return (
-    <GradientCard className="p-6 sm:p-7">
-      <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--accent-muted)]">
-        {useCase.label}
-      </div>
-      <h3 className="mt-3 text-2xl font-semibold text-[var(--foreground)]">{useCase.title}</h3>
-      <div className="mt-6">
-        <StepFlow items={useCase.flow} />
-      </div>
-      <dl className="mt-6 grid gap-3 lg:grid-cols-2">
+    <div className="border-t border-[var(--line)] p-5 sm:p-6">
+      <StepFlow items={useCase.flow} />
+      <dl className="mt-5 grid gap-3 lg:grid-cols-2">
         <UseCaseDetail body={useCase.startingState} label="Starting state" />
         <UseCaseDetail body={useCase.systemMap} label="System map" />
         <UseCaseDetail body={useCase.agentBehavior} label="Agent behavior" />
@@ -264,7 +266,7 @@ export function UseCaseFlow({ useCase }: { useCase: UseCaseContent }) {
         <UseCaseDetail body={useCase.exceptionPath} label="Exception path" />
         <UseCaseDetail body={useCase.decisionEvidence} label="Decision evidence" />
       </dl>
-    </GradientCard>
+    </div>
   )
 }
 

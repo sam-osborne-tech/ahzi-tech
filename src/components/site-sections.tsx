@@ -10,9 +10,9 @@ import { motion, useReducedMotion } from 'motion/react'
 import type { CSSProperties } from 'react'
 import { siteContent, type OfferingContent } from '../content/site-content'
 import { insetPhotos, sectionPhotos } from '../lib/site-assets'
+import { DisclosureGroup } from './disclosure-group'
 import { LeadIntakeForm } from './lead-intake-form'
 import {
-  CardGrid,
   CtaBlock,
   GradientCard,
   InsetPhoto,
@@ -113,43 +113,63 @@ function OfferingDetail({ body, label }: { body: string; label: string }) {
   )
 }
 
-function OfferingCard({ offering }: { offering: OfferingContent }) {
+function offeringId(offering: OfferingContent) {
+  return offering.id
+}
+
+function OfferingSummary({ label, summary, title }: OfferingContent) {
   return (
-    <GradientCard className="p-6">
-      <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--accent-muted)]">
-        {offering.label}
-      </div>
-      <h3 className="mt-3 text-2xl font-semibold text-[var(--foreground)]">{offering.title}</h3>
-      <dl className="mt-6 grid gap-4">
-        <OfferingDetail body={offering.forWho} label="Who it is for" />
-        <OfferingDetail body={offering.problem} label="Concrete problem" />
-        <OfferingDetail body={offering.work} label="What Ahzi builds or does" />
-        <OfferingDetail body={offering.systems} label="Systems and boundary" />
+    <span className="grid gap-2 text-left sm:grid-cols-[7rem_minmax(12rem,0.8fr)_minmax(16rem,1.2fr)] sm:items-center sm:gap-5">
+      <span className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--accent-muted)]">
+        {label}
+      </span>
+      <span className="text-lg font-semibold text-[var(--foreground)]">{title}</span>
+      <span className="text-sm leading-6 text-[var(--foreground-muted)]">{summary}</span>
+    </span>
+  )
+}
+
+function OfferingPanel({ offering }: { offering: OfferingContent }) {
+  return (
+    <div className="border-t border-[var(--line)] p-5 sm:p-6">
+      <dl className="grid gap-4 lg:grid-cols-2">
+        <OfferingDetail body={offering.forWho} label="For" />
+        <OfferingDetail body={offering.problem} label="Problem" />
+        <OfferingDetail body={offering.work} label="Work" />
+        <OfferingDetail body={offering.systems} label="Boundary" />
       </dl>
       <div className="mt-5">
         <div className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--accent-muted)]">
-          Tangible deliverables
+          Deliverables
         </div>
         <ProofList className="mt-3" items={offering.deliverables} />
       </div>
-      <dl className="mt-5 grid gap-4">
-        <OfferingDetail body={offering.controls} label="Human and release controls" />
-        <OfferingDetail body={offering.nextDecision} label="Next buying decision" />
+      <dl className="mt-5 grid gap-4 lg:grid-cols-2">
+        <OfferingDetail body={offering.controls} label="Controls" />
+        <OfferingDetail body={offering.nextDecision} label="Next decision" />
       </dl>
-    </GradientCard>
+    </div>
   )
+}
+
+function useCaseId(useCase: (typeof siteContent.useCases.items)[number]) {
+  return useCase.id
 }
 
 export function OfferingsSection() {
   return (
-    <SectionShell id="offerings" photo={sectionPhotos.audiences}>
+    <SectionShell id="offerings" photo={sectionPhotos.audiences} spacing="compact">
       <div className="mx-auto max-w-7xl">
         <SectionHeading icon={Boxes} {...siteContent.offerings.heading} />
-        <CardGrid className="mt-12" columns={2}>
-          {siteContent.offerings.items.map((offering) => (
-            <OfferingCard key={offering.title} offering={offering} />
-          ))}
-        </CardGrid>
+        <DisclosureGroup
+          ariaLabel="Ahzi offerings"
+          className="mt-10"
+          getItemId={offeringId}
+          groupId="offerings"
+          items={siteContent.offerings.items}
+          renderPanel={(offering) => <OfferingPanel offering={offering} />}
+          renderSummary={(offering) => <OfferingSummary {...offering} />}
+        />
       </div>
     </SectionShell>
   )
@@ -157,14 +177,30 @@ export function OfferingsSection() {
 
 export function UseCasesSection() {
   return (
-    <SectionShell id="use-cases" photo={sectionPhotos.benefits}>
+    <SectionShell id="use-cases" photo={sectionPhotos.benefits} spacing="compact">
       <div className="mx-auto max-w-7xl">
         <SectionHeading align="center" icon={FileCheck2} {...siteContent.useCases.heading} />
-        <div className="mt-12 grid gap-5">
-          {siteContent.useCases.items.map((useCase) => (
-            <UseCaseFlow key={useCase.title} useCase={useCase} />
-          ))}
-        </div>
+        <DisclosureGroup
+          ariaLabel="Workflow walkthroughs"
+          className="mx-auto mt-10 max-w-5xl"
+          getItemId={useCaseId}
+          groupId="use-cases"
+          items={siteContent.useCases.items}
+          renderPanel={(useCase) => <UseCaseFlow useCase={useCase} />}
+          renderSummary={({ label, summary, title }) => (
+            <span className="grid gap-2 text-left sm:grid-cols-[minmax(12rem,0.8fr)_minmax(18rem,1.2fr)] sm:items-center sm:gap-6">
+              <span>
+                <span className="block text-xs font-semibold uppercase tracking-[0.14em] text-[var(--accent-muted)]">
+                  {label}
+                </span>
+                <span className="mt-2 block text-lg font-semibold text-[var(--foreground)]">
+                  {title}
+                </span>
+              </span>
+              <span className="text-sm leading-6 text-[var(--foreground-muted)]">{summary}</span>
+            </span>
+          )}
+        />
       </div>
     </SectionShell>
   )
@@ -172,24 +208,27 @@ export function UseCasesSection() {
 
 export function ProofSection() {
   return (
-    <SectionShell id="proof" photo={sectionPhotos.why} surface="soft">
+    <SectionShell id="proof" photo={sectionPhotos.why} spacing="compact" surface="soft">
       <div className="mx-auto max-w-7xl">
         <SectionHeading icon={ShieldCheck} {...siteContent.proof.heading} />
-        <CardGrid className="mt-12" columns={4}>
-          {siteContent.proof.claims.map(({ body, title }) => (
-            <GradientCard className="min-h-48" key={title}>
-              <h3 className="text-xl font-semibold text-[var(--foreground)]">{title}</h3>
-              <p className="mt-4 text-sm leading-6 text-[var(--foreground-muted)]">{body}</p>
-            </GradientCard>
-          ))}
-        </CardGrid>
-        <GradientCard as="div" className="mt-6 p-6">
-          <h3 className="text-xl font-semibold text-[var(--foreground)]">
-            Controls included in the delivery boundary
-          </h3>
-          <ProofList className="mt-5" columns={2} items={siteContent.proof.controls} />
+        <GradientCard as="div" className="mt-10 grid gap-8 p-6 lg:grid-cols-2">
+          <div>
+            <h3 className="text-xl font-semibold text-[var(--foreground)]">Delivery proof</h3>
+            <div className="mt-5 grid gap-4 sm:grid-cols-2">
+              {siteContent.proof.claims.map(({ body, title }) => (
+                <div className="border-t border-[var(--line)] pt-4" key={title}>
+                  <h4 className="font-semibold text-[var(--foreground)]">{title}</h4>
+                  <p className="mt-2 text-sm leading-6 text-[var(--foreground-muted)]">{body}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div>
+            <h3 className="text-xl font-semibold text-[var(--foreground)]">Build controls</h3>
+            <ProofList className="mt-5" items={siteContent.proof.controls} />
+          </div>
         </GradientCard>
-        <div className="mt-8 grid gap-4 sm:grid-cols-2">
+        <div className="mt-4 grid gap-4 sm:grid-cols-2">
           <InsetPhoto photo={sectionPhotos.platforms} />
           <InsetPhoto photo={sectionPhotos.outputs} />
         </div>
@@ -202,19 +241,26 @@ export function EngagementSection() {
   const actions: CtaAction[] = [{ ...siteContent.engagement.cta, icon: Route }]
 
   return (
-    <SectionShell id="engagement" photo={sectionPhotos.firstSprint}>
+    <SectionShell id="engagement" photo={sectionPhotos.firstSprint} spacing="compact">
       <div className="mx-auto max-w-7xl">
         <SectionHeading icon={Workflow} {...siteContent.engagement.heading} />
-        <div className="mt-10 grid gap-4 lg:grid-cols-[1fr_1fr_1fr]">
-          {siteContent.engagement.steps.map(({ body, title }) => (
-            <GradientCard key={title}>
-              <h3 className="text-xl font-semibold text-[var(--foreground)]">{title}</h3>
-              <p className="mt-4 text-sm leading-6 text-[var(--foreground-muted)]">{body}</p>
-            </GradientCard>
-          ))}
-        </div>
-        <InsetPhoto className="mt-6" photo={insetPhotos.firstSprint} />
-        <CtaBlock actions={actions} className="mt-6" />
+        <GradientCard as="div" className="mt-10 grid gap-6 p-6 lg:grid-cols-[1.2fr_0.8fr]">
+          <div>
+            <ol className="grid gap-5 sm:grid-cols-3">
+              {siteContent.engagement.steps.map(({ body, title }, index) => (
+                <li className="border-t border-[var(--line)] pt-4" key={title}>
+                  <span className="text-xs font-semibold text-[var(--accent-muted)]">
+                    0{index + 1}
+                  </span>
+                  <h3 className="mt-2 font-semibold text-[var(--foreground)]">{title}</h3>
+                  <p className="mt-2 text-sm leading-6 text-[var(--foreground-muted)]">{body}</p>
+                </li>
+              ))}
+            </ol>
+            <CtaBlock actions={actions} className="mt-6" />
+          </div>
+          <InsetPhoto className="engagement-inset" photo={insetPhotos.firstSprint} />
+        </GradientCard>
       </div>
     </SectionShell>
   )
@@ -228,17 +274,9 @@ export function ConversionSection({
   onPrepareDraft: (mailTo: string) => boolean
 }) {
   return (
-    <SectionShell id="contact" photo={sectionPhotos.contact} surface="soft">
-      <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.82fr_1.18fr] lg:items-start">
-        <div>
-          <SectionHeading icon={Route} {...siteContent.conversion.heading} />
-          <GradientCard as="div" className="mt-8">
-            <h3 className="text-sm font-semibold uppercase tracking-[0.14em] text-[var(--accent-muted)]">
-              {siteContent.conversion.replyTitle}
-            </h3>
-            <ProofList className="mt-4" items={siteContent.conversion.replyCovers} />
-          </GradientCard>
-        </div>
+    <SectionShell id="contact" photo={sectionPhotos.contact} spacing="compact" surface="soft">
+      <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.72fr_1.28fr] lg:items-start">
+        <SectionHeading icon={Route} {...siteContent.conversion.heading} />
         <div>
           {contactNotice ? (
             <div

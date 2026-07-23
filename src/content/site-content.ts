@@ -13,9 +13,11 @@ export type OfferingContent = {
   controls: string
   deliverables: readonly string[]
   forWho: string
+  id: string
   label: string
   nextDecision: string
   problem: string
+  summary: string
   systems: string
   title: string
   work: string
@@ -30,17 +32,16 @@ export type AgentBusinessFunction =
   | 'Service'
 
 export type AgentPatternContent = {
+  actions: string
   businessFunction: AgentBusinessFunction
   evidence: string
   humanGate: string
   id: string
+  outcome: string
   readsFrom: string
-  status: 'Buildable agent pattern'
-  summary: string
   title: string
   trigger: string
-  workPerformed: string
-  writesActions: string
+  writes: string
 }
 
 export type AgentLabScenarioContent = {
@@ -63,7 +64,9 @@ export type UseCaseContent = {
   exceptionPath: string
   flow: readonly string[]
   humanControls: string
+  id: string
   label: string
+  summary: string
   startingState: string
   systemMap: string
   title: string
@@ -99,13 +102,16 @@ const offerings = [
     ],
     forWho:
       'Operations, product, or CRM owners choosing where an agent should enter a real process.',
+    id: 'offering-workflow-selection',
     label: 'Select',
     nextDecision:
       'Choose a production build, fix a prerequisite, or stop before spending on implementation.',
     problem:
-      'The team has a list of AI ideas but cannot tell which one has usable context, bounded risk, and an accountable operator.',
+      'The team has AI ideas but lacks the context, risk boundary, and accountable operator needed to choose one.',
+    summary:
+      'Choose a workflow with a clear owner, boundary, and release decision.',
     systems:
-      'Representative records and process artifacts are reviewed read-only. Production systems are not changed.',
+      'The review stays read-only across representative records and process artifacts.',
     title: 'Workflow Selection Review',
     work:
       'Ahzi traces one process from trigger to decision, tests the riskiest assumption, and defines the smallest useful agent boundary.',
@@ -120,11 +126,14 @@ const offerings = [
     ],
     forWho:
       'Teams that already know the workflow and need an agent connected to business systems.',
+    id: 'offering-production-agent',
     label: 'Build',
     nextDecision:
       'Approve a bounded release, hold for remediation, or keep the agent in supervised operation.',
     problem:
-      'A prototype can produce an answer but cannot yet retrieve the right record, call an approved action, or survive a production review.',
+      'The prototype produces an answer but lacks record retrieval, approved actions, and production review evidence.',
+    summary:
+      'Connect one owned workflow to approved systems, tools, and release controls.',
     systems:
       'CRM, approved knowledge sources, internal APIs, and workflow queues, first in a sandbox and then behind a release decision.',
     title: 'Production Agent Build',
@@ -141,11 +150,14 @@ const offerings = [
     ],
     forWho:
       'Legal, finance, and operations teams turning contracts, forms, or case files into structured records.',
+    id: 'offering-document-intelligence',
     label: 'Extract',
     nextDecision:
       'Publish the structured data, revise the schema or checks, or hold the affected records for review.',
     problem:
-      'Critical terms are trapped in inconsistent documents, and spot checks cannot show whether a full export is safe to use.',
+      'Critical terms are trapped in inconsistent documents, and spot checks leave the full export unverified.',
+    summary:
+      'Turn documents into source-linked records with a review queue and population checks.',
     systems:
       'Document repository, native or selected OCR, extraction model, staging tables, exception queue, and audit store.',
     title: 'Document Intelligence System',
@@ -162,16 +174,19 @@ const offerings = [
     ],
     forWho:
       'Product and engineering teams embedding AI into customer software or an internal operating tool.',
+    id: 'offering-embedded-copilot',
     label: 'Embed',
     nextDecision:
       'Release to a limited audience, keep the feature behind a flag, or return it to evaluation.',
     problem:
       'The prompt works in isolation, but the product lacks grounded context, safe actions, version comparison, and a release mechanism.',
+    summary:
+      'Embed grounded retrieval and approved actions inside an existing product.',
     systems:
       'Existing product or internal application, approved knowledge, model provider, application APIs, telemetry, and feature controls.',
     title: 'Embedded Copilot Delivery',
     work:
-      'Ahzi connects the interface, retrieval, tools, trace, feedback, and release gates without replacing the product around them.',
+      'Ahzi connects the interface, retrieval, tools, trace, feedback, and release gates inside the existing product.',
   },
   {
     controls:
@@ -182,12 +197,15 @@ const offerings = [
       'Release gate, review queue, incident path, and operating dashboard definition',
     ],
     forWho:
-      'Teams with an existing agent or AI feature but no dependable quality and release loop.',
+      'Teams with an existing agent or AI feature that lacks a dependable quality and release loop.',
+    id: 'offering-agent-operations',
     label: 'Operate',
     nextDecision:
       'Ship the candidate, hold the release, or prioritize the failure class that needs another build cycle.',
     problem:
-      'The team can see that a run completed but cannot prove the tool choice, intermediate decisions, or final action were acceptable.',
+      'A completed run lacks proof for the tool choice, intermediate decisions, and final action.',
+    summary:
+      'Turn traces and failures into repeatable release gates and operating checks.',
     systems:
       'Existing agent runtime, traces, evaluation data, CI or release workflow, human review queue, and production telemetry.',
     title: 'Agent Evaluation and Operations',
@@ -198,143 +216,136 @@ const offerings = [
 
 const agentPatterns = [
   {
+    actions:
+      'Detect missing fields, retrieve account context, classify the request, draft clarifying questions, and select an allowed queue.',
     businessFunction: 'Service',
     evidence:
       'Case source links, classification rationale, approval identity, reconciled record changes, and exception status.',
     humanGate:
       'A service owner approves queue changes or customer-facing language and owns ambiguous entitlement decisions.',
     id: 'crm-service-triage',
+    outcome:
+      'Complete service context, an owned route, and a governed CRM update.',
     readsFrom:
       'CRM case and account records, entitlement data, approved support policy, and queue capacity.',
-    status: 'Buildable agent pattern',
-    summary:
-      'Completes missing service context, proposes a route, and keeps consequential CRM updates behind an owner decision.',
     title: 'CRM service triage agent',
     trigger:
-      'A new case, message, or intake record arrives without enough information for reliable routing.',
-    workPerformed:
-      'Detect missing fields, retrieve account context, classify the request, draft clarifying questions, and select an allowed queue.',
-    writesActions:
+      'A new case, message, or intake record arrives with missing routing information.',
+    writes:
       'Propose or apply accepted case fields, create a follow-up task, and route the record through an approved CRM action.',
   },
   {
+    actions:
+      'Validate completeness, normalize fields, match records, request missing items, and assemble the next-step packet.',
     businessFunction: 'Operations',
     evidence:
       'Requirement checklist, source references, missing-item log, approval state, and downstream handoff record.',
     humanGate:
       'An onboarding owner clears identity, eligibility, policy exceptions, and any step that creates external access.',
     id: 'intake-onboarding',
+    outcome:
+      'A complete onboarding decision, review packet, and owned handoff.',
     readsFrom:
       'Submitted forms, CRM or case records, document repository, eligibility rules, and internal checklists.',
-    status: 'Buildable agent pattern',
-    summary:
-      'Turns a scattered intake package into a complete, reviewable onboarding decision and handoff.',
     title: 'Intake and onboarding agent',
     trigger:
       'A prospect, customer, vendor, or employee submits the first intake package.',
-    workPerformed:
-      'Validate completeness, normalize fields, match records, request missing items, and assemble the next-step packet.',
-    writesActions:
+    writes:
       'Update staging fields, open approved tasks, and prepare the accepted onboarding record for the system of record.',
   },
   {
+    actions:
+      'Run OCR when needed, identify target clauses, normalize values, compare related terms, and route uncertainty.',
     businessFunction: 'Legal',
     evidence:
       'Field-level source citations, extraction status, conflict flags, reviewer decisions, and population reconciliation.',
     humanGate:
       'A domain reviewer adjudicates material clauses, conflicting dates, missing pages, and final publication.',
     id: 'contract-intelligence',
+    outcome:
+      'Source-linked contract records with every conflict routed for review.',
     readsFrom:
       'Agreement files, OCR output, approved clause definitions, target schema, and reference examples.',
-    status: 'Buildable agent pattern',
-    summary:
-      'Extracts contract terms into structured data while preserving every source and exception needed for review.',
     title: 'Contract intelligence agent',
     trigger:
       'An agreement is uploaded, renewed, or selected for a structured contract inventory.',
-    workPerformed:
-      'Run OCR when needed, identify target clauses, normalize values, compare related terms, and route uncertainty.',
-    writesActions:
+    writes:
       'Write source-linked fields to staging, create exception items, and publish only the reviewer-approved record.',
   },
   {
+    actions:
+      'Reconcile account signals, surface recent changes, identify missing context, and draft grounded preparation notes.',
     businessFunction: 'Revenue',
     evidence:
       'Source-linked brief, stale-data warnings, unresolved questions, action approvals, and CRM activity record.',
     humanGate:
       'The account owner approves outreach, forecast changes, opportunity edits, and any external communication.',
     id: 'revenue-account-prep',
+    outcome:
+      'A source-linked account brief, open questions, and approved next steps.',
     readsFrom:
       'Account, contact, opportunity, activity, support, and approved product or market context.',
-    status: 'Buildable agent pattern',
-    summary:
-      'Assembles an account briefing and next-step options without fabricating missing commercial context.',
     title: 'Revenue and account preparation agent',
     trigger:
       'An account review, renewal discussion, pipeline inspection, or customer meeting is scheduled.',
-    workPerformed:
-      'Reconcile account signals, surface recent changes, identify missing context, and draft grounded preparation notes.',
-    writesActions:
+    writes:
       'Publish an internal brief, propose CRM follow-ups, and create accepted owner tasks.',
   },
   {
+    actions:
+      'Retrieve authoritative sources, reconcile conflicts, produce a cited answer, and plan an allowed tool call.',
     businessFunction: 'Product',
     evidence:
       'Cited answer, retrieved-source list, tool trace, user feedback, policy outcome, and escalation record.',
     humanGate:
       'Subject owners approve restricted answers and consequential tools, while users can edit, reject, or escalate every recommendation.',
     id: 'knowledge-operations-copilot',
+    outcome:
+      'A cited operating answer with authorized next actions and an escalation path.',
     readsFrom:
       'Approved knowledge, operational records, internal APIs, access policy, and current user context.',
-    status: 'Buildable agent pattern',
-    summary:
-      'Answers an internal operating question, gathers the supporting records, and proposes only authorized next actions.',
     title: 'Internal knowledge and operations copilot',
     trigger:
       'A user asks a supported operational question or requests help completing an internal task.',
-    workPerformed:
-      'Retrieve authoritative sources, reconcile conflicts, produce a cited answer, and plan an allowed tool call.',
-    writesActions:
+    writes:
       'Draft or execute an approved internal action, attach evidence, and route unsupported requests to the right queue.',
   },
   {
+    actions:
+      'Compare sources, classify the defect, calculate the safe correction set, and isolate ambiguous records.',
     businessFunction: 'Data',
     evidence:
       'Before and after values, source hierarchy, validation output, approver identity, and rollback reference.',
     humanGate:
       'A data steward approves merges, ownership changes, destructive edits, and corrections that lack a single authoritative source.',
     id: 'crm-data-quality',
+    outcome:
+      'A governed correction set with source conflicts and rollback evidence.',
     readsFrom:
       'CRM records, duplicate candidates, ownership rules, validation policy, and approved reference systems.',
-    status: 'Buildable agent pattern',
-    summary:
-      'Finds actionable CRM quality defects, explains the source conflict, and stages governed corrections.',
     title: 'CRM data-quality and governed action agent',
     trigger:
       'A record fails validation, a duplicate cluster appears, or an owner requests a quality review.',
-    workPerformed:
-      'Compare sources, classify the defect, calculate the safe correction set, and isolate ambiguous records.',
-    writesActions:
+    writes:
       'Stage approved field updates, merge or route records through existing controls, and record a reversible change set.',
   },
   {
+    actions:
+      'Run representative scenarios, score final and intermediate steps, compare versions, and classify regressions.',
     businessFunction: 'Product',
     evidence:
       'Version comparison, failed-case trace, scorer output, reviewer annotation, release result, and rollback trigger.',
     humanGate:
       'Product and domain owners calibrate the rubric, accept threshold changes, and make the final release decision.',
     id: 'agent-release-watchdog',
+    outcome:
+      'A release decision backed by repeatable cases, traces, and rollback triggers.',
     readsFrom:
       'Agent traces, evaluation datasets, release candidates, production feedback, and incident policy.',
-    status: 'Buildable agent pattern',
-    summary:
-      'Turns agent failures into repeatable evaluation cases and blocks a release when an owned gate fails.',
     title: 'Agent evaluation and release watchdog',
     trigger:
       'A prompt, model, tool, retrieval source, or orchestration change creates a new release candidate.',
-    workPerformed:
-      'Run representative scenarios, score final and intermediate steps, compare versions, and classify regressions.',
-    writesActions:
+    writes:
       'Publish the release report, add approved failures to the regression set, and hold or clear the deployment gate.',
   },
 ] as const satisfies readonly AgentPatternContent[]
@@ -348,12 +359,12 @@ const agentLabScenarios = [
     id: 'service-triage',
     label: 'Service triage',
     plan: [
-      'Complete the missing service context without inventing entitlement data.',
+      'Complete the missing service context from recorded entitlement data.',
       'Classify the request, propose the route, and prepare a reversible CRM update.',
     ],
     reads: [
-      'Synthetic Salesforce Case and Account',
-      'Synthetic entitlement record',
+      'Sample Salesforce Case and Account',
+      'Sample entitlement record',
       'Approved service routing policy',
       'Current queue ownership',
     ],
@@ -362,15 +373,15 @@ const agentLabScenarios = [
       'The run proposes a customer-record update, so the write requires an accountable service owner.',
     summary:
       'A service request arrives with an unclear category and missing entitlement context.',
-    trigger: 'Synthetic case received from a web intake channel.',
+    trigger: 'Sample case received from a web intake channel.',
     write:
-      'Update the synthetic case only after approval, then record the before and after values.',
+      'Update the sample case after approval, then record the before and after values.',
   },
   {
     action:
       'Extract the target terms, compare related dates, and send conflicts to the document exception queue.',
     evaluation:
-      'Check every required field, source citation, exception rule, and the full synthetic population manifest.',
+      'Check every required field, source citation, exception rule, and the full sample population manifest.',
     id: 'contract-extraction',
     label: 'Contract extraction',
     plan: [
@@ -378,7 +389,7 @@ const agentLabScenarios = [
       'Normalize the requested clauses, isolate conflicts, and stage the result for review.',
     ],
     reads: [
-      'Synthetic agreement pages',
+      'Sample agreement pages',
       'Target contract schema',
       'Approved clause definitions',
       'Reference extraction cases',
@@ -388,9 +399,9 @@ const agentLabScenarios = [
       'Conflicting renewal language affects publication, so a domain reviewer must adjudicate the staged record.',
     summary:
       'A newly uploaded agreement contains inconsistent renewal and notice language.',
-    trigger: 'Synthetic agreement added to the document intake folder.',
+    trigger: 'Sample agreement added to the document intake folder.',
     write:
-      'Publish approved structured terms or retain the record in the exception queue with no downstream update.',
+      'Publish approved structured terms or keep the record in the exception queue.',
   },
   {
     action:
@@ -404,19 +415,19 @@ const agentLabScenarios = [
       'Create an internal brief that separates known facts from unanswered questions.',
     ],
     reads: [
-      'Synthetic CRM account and opportunity',
-      'Synthetic activity history',
-      'Synthetic support summary',
+      'Sample CRM account and opportunity',
+      'Sample activity history',
+      'Sample support summary',
       'Approved product knowledge',
     ],
     risk: 'low',
     riskReason:
-      'The output is an internal, source-linked brief and does not change customer records or send communication.',
+      'The output is an internal, source-linked brief. Customer records and communications stay unchanged.',
     summary:
       'An account owner needs a grounded briefing before an internal pipeline review.',
-    trigger: 'Synthetic account review requested by the opportunity owner.',
+    trigger: 'Sample account review requested by the opportunity owner.',
     write:
-      'Save the synthetic internal brief and proposed tasks without editing the source CRM records.',
+      'Save the sample internal brief and proposed tasks. Keep source CRM records unchanged.',
   },
 ] as const satisfies readonly AgentLabScenarioContent[]
 
@@ -434,9 +445,9 @@ export const siteContent = {
   nav: [
     { label: 'Agent Lab', target: '#agent-lab' },
     { label: 'Offerings', target: '#offerings' },
-    { label: 'Agent catalog', target: '#agent-catalog' },
-    { label: 'Use cases', target: '#use-cases' },
-    { label: 'Proof and controls', target: '#proof' },
+    { label: 'Agents we build', target: '#agent-catalog' },
+    { label: 'Workflow paths', target: '#use-cases' },
+    { label: 'Proof', target: '#proof' },
     { label: 'Workflow review', target: '#engagement' },
   ],
   hero: {
@@ -454,13 +465,10 @@ export const siteContent = {
       'Turn one manual workflow into an agent your team can inspect, approve, and operate.',
   },
   agentLab: {
-    disclaimer:
-      'Interactive synthetic walkthrough. No live model, customer data, or production execution.',
     heading: {
       badge: 'Agent Lab',
-      body:
-        'Choose a synthetic workflow, change its approval policy, and step through the trigger, context, plan, gate, action, and audit evidence.',
-      title: 'Inspect the run, not a chatbot transcript.',
+      body: 'Choose an agent. Set the approval policy. Run the trace.',
+      title: 'Trace the workflow from trigger to proof.',
     },
     policies: [
       {
@@ -471,7 +479,7 @@ export const siteContent = {
       },
       {
         body:
-          'Low-risk internal outputs may continue when all policy checks pass. Controlled actions still stop for review.',
+          'Low-risk internal outputs continue when all policy checks pass. Controlled actions still stop for review.',
         id: 'bounded-autonomy',
         label: 'Autonomy within policy',
       },
@@ -480,31 +488,29 @@ export const siteContent = {
   },
   offerings: {
     heading: {
-      badge: 'Productized offerings',
+      badge: 'What Ahzi delivers',
       body:
-        'Each engagement has a defined buyer problem, system boundary, tangible handoff, human control, and next decision.',
-      title: 'Five things Ahzi can be hired to deliver.',
+        'Each engagement ends with defined artifacts, named controls, and a clear next decision.',
+      title: 'Choose the engagement that matches the decision.',
     },
     items: offerings,
   },
   agentCatalog: {
     filters: ['All', 'Service', 'Operations', 'Legal', 'Revenue', 'Product', 'Data'] as const,
     heading: {
-      badge: 'Agent catalog',
+      badge: 'Agents we build',
       body:
-        'These patterns show the exact trigger, context, work, actions, gate, and evidence that a build would need.',
-      title: 'Agents designed around business events and owned decisions.',
+        'Filter by function, then open an agent to inspect its trigger, reads, actions, writes, human gate, and proof.',
+      title: 'Start with an owned business event.',
     },
     items: agentPatterns,
-    patternNote:
-      'Buildable agent patterns, not claims of customer deployment. Final scope depends on source access, permissions, policy, and representative evaluation data.',
   },
   useCases: {
     heading: {
-      badge: 'Deep use cases',
+      badge: 'Workflow walkthroughs',
       body:
-        'Each walkthrough follows the operating system around the model: starting state, system map, agent behavior, owner gate, exception branch, and release evidence.',
-      title: 'Three implementation paths from event to accountable outcome.',
+        'Open one path to inspect its systems, controls, exception route, and proof.',
+      title: 'Run these workflows from event to accountable action.',
     },
     items: [
       {
@@ -523,7 +529,10 @@ export const siteContent = {
         ],
         humanControls:
           'The service owner defines eligible queues and writes, approves customer-record changes, edits proposed language, and can stop or reroute the run.',
+        id: 'use-case-service-triage',
         label: 'Salesforce and CRM intake',
+        summary:
+          'Complete missing case context, route the work, and govern the CRM update.',
         startingState:
           'Requests arrive with incomplete details, forcing the service team to search account history before it can classify or assign the work.',
         systemMap:
@@ -536,7 +545,7 @@ export const siteContent = {
         decisionEvidence:
           'A field-level reference set, source coverage, exception tests, record counts, deterministic cross-checks, and the reviewer ledger support publication.',
         exceptionPath:
-          'Unreadable pages, absent fields, conflicting clauses, and invalid normalized values enter a review queue without silently filling the target record.',
+          'Unreadable pages, absent fields, conflicting clauses, and invalid normalized values enter review before any target record is written.',
         flow: [
           'Document intake',
           'Text and page extraction',
@@ -546,7 +555,10 @@ export const siteContent = {
         ],
         humanControls:
           'Domain owners set the schema and materiality rules, adjudicate flagged fields, approve the export, and can rerun the affected population.',
+        id: 'use-case-contract-data',
         label: 'Contracts and document data',
+        summary:
+          'Extract source-linked contract terms, route conflicts, and verify the full population.',
         startingState:
           'Terms live across inconsistent files, while manual copying and sample review leave the full data population unverified.',
         systemMap:
@@ -569,9 +581,12 @@ export const siteContent = {
         ],
         humanControls:
           'Product owners choose the sources and evaluation cases, approve consequential actions, control the feature flag, and own rollback and incident response.',
+        id: 'use-case-embedded-copilot',
         label: 'Embedded product and internal copilot',
+        summary:
+          'Ground the copilot, constrain its tools, and hold every release to an owned gate.',
         startingState:
-          'A useful prompt or prototype exists, but the application cannot compare versions, constrain tools, or block a regression from reaching users.',
+          'A useful prompt or prototype exists, but the application lacks version comparison, tool constraints, and regression gates.',
         systemMap:
           'Product interface to identity and approved knowledge to model and tool gateway to application action, with tracing, evaluation, and release controls around the path.',
         title: 'An embedded copilot with a release gate',
@@ -592,7 +607,7 @@ export const siteContent = {
       },
       {
         body:
-          'Internal MCP tools, review queues, benchmarks, and agent harnesses are used as operating software, not presentation artifacts.',
+          'Internal MCP tools, review queues, benchmarks, and agent harnesses run Ahzi operating workflows.',
         title: 'Operator-owned AI tooling',
       },
       {
@@ -608,10 +623,10 @@ export const siteContent = {
       'Operating boundary: trace capture, exception ownership, release gate, and rollback path',
     ],
     heading: {
-      badge: 'Public proof and delivery controls',
+      badge: 'Proof and controls',
       body:
-        'The proof describes shipped capability. The controls describe what every new implementation must make inspectable before release.',
-      title: 'Evidence on one side, operating boundaries on the other.',
+        'Delivery evidence sits beside the permissions, approvals, evaluation, and rollback path.',
+      title: 'Proof from shipped work. Controls for the next build.',
     },
   },
   engagement: {
@@ -619,8 +634,8 @@ export const siteContent = {
     heading: {
       badge: 'Engagement path',
       body:
-        'The first engagement is a compact decision path, not an open-ended advisory program.',
-      title: 'One review ends in a build, a prerequisite, or a no-build decision.',
+        'Map the trigger, records, actions, owner, and first test in one focused review.',
+      title: 'Bring one workflow. Leave with a decision.',
     },
     steps: [
       {
@@ -635,7 +650,7 @@ export const siteContent = {
       },
       {
         body:
-          'Leave with a concrete offering, a prerequisite to fix, or a documented reason not to build.',
+          'Leave with a concrete offering, a prerequisite to fix, or a documented stop decision.',
         title: 'Make the buying decision',
       },
     ],
@@ -645,15 +660,9 @@ export const siteContent = {
     heading: {
       badge: 'Workflow review request',
       body:
-        'Describe the trigger, system, owner, current handoff, and the action that needs better evidence or control.',
-      title: 'Put one workflow on the table.',
+        'Name the trigger, system, owner, handoff, and action that needs a stronger control.',
+      title: 'Start with one workflow.',
     },
-    replyCovers: [
-      'Which Ahzi offering matches the current decision',
-      'The boundary or prerequisite that needs the first test',
-      'The records and owner needed for a useful working session',
-    ],
-    replyTitle: 'What the first reply will resolve',
   },
   callsToAction: Object.values(callsToAction),
   footer: {

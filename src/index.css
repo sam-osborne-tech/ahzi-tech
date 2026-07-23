@@ -335,6 +335,49 @@ section[id] {
   background: var(--photo-card-hover-surface);
 }
 
+.disclosure-group {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.disclosure-item {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  box-shadow: var(--panel-shadow);
+}
+
+.disclosure-trigger {
+  display: flex;
+  width: 100%;
+  min-height: 5.5rem;
+  align-items: center;
+  gap: 1rem;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  padding: 1rem 1.25rem;
+  font: inherit;
+  cursor: pointer;
+}
+
+.disclosure-trigger:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: -3px;
+}
+
+.disclosure-chevron {
+  width: 1.1rem;
+  height: 1.1rem;
+  flex: none;
+  color: var(--accent-muted);
+  transition: transform 180ms ease;
+}
+
+.disclosure-panel[hidden] {
+  display: none;
+}
+
 #agent-lab .photo-card {
   background: var(--photo-card-ink-surface);
 }
@@ -528,6 +571,10 @@ section[id] {
 }
 
 @media (min-width: 1024px) {
+  .engagement-inset img {
+    height: 100%;
+  }
+
   .scroll-dots {
     display: flex;
   }
@@ -559,6 +606,10 @@ section[id] {
     transform: none !important;
     filter: none !important;
     transition: opacity 250ms ease !important;
+  }
+
+  .disclosure-chevron {
+    transition: none !important;
   }
 }
 

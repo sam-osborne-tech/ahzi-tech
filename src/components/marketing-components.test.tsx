@@ -46,7 +46,6 @@ describe('marketing components', () => {
     const useCase = siteContent.useCases.items[0]
     const markup = renderToStaticMarkup(<UseCaseFlow useCase={useCase} />)
 
-    expect(markup).toContain(useCase.label)
     expect(markup).toContain(useCase.startingState)
     expect(markup).toContain('System map')
     expect(markup).toContain('Agent behavior')

@@ -38,9 +38,9 @@ const expectedPhotoCardCounts = [
   ['offerings', 5],
   ['agent-catalog', 7],
   ['use-cases', 3],
-  ['proof', 5],
-  ['engagement', 3],
-  ['contact', 2],
+  ['proof', 1],
+  ['engagement', 1],
+  ['contact', 1],
 ] as const
 
 const minimumPhotoCardOpacity = 1

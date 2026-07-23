@@ -11,11 +11,11 @@ import {
 } from './agent-lab-model'
 
 describe('AgentLab', () => {
-  it('labels the experience as synthetic and renders accessible controls', () => {
+  it('renders direct Agent Lab copy with accessible controls', () => {
     const markup = renderToStaticMarkup(<AgentLab />)
 
-    expect(markup).toContain('Interactive synthetic walkthrough')
-    expect(markup).toContain('No live model, customer data, or production execution.')
+    expect(markup).toContain('Choose an agent. Set the approval policy. Run the trace.')
+    expect(markup).not.toMatch(/synthetic|no live model|production execution/i)
     expect(markup).toContain('role="tablist"')
     expect(markup.match(/role="tab"/g)).toHaveLength(siteContent.agentLab.scenarios.length)
     expect(markup).toContain('aria-selected="true"')

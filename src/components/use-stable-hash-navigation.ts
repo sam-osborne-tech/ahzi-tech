@@ -44,9 +44,11 @@ export function useStableHashNavigation() {
 
     scrollToHashTarget()
     window.addEventListener('hashchange', scrollToHashTarget)
+    window.addEventListener('popstate', scrollToHashTarget)
 
     return () => {
       window.removeEventListener('hashchange', scrollToHashTarget)
+      window.removeEventListener('popstate', scrollToHashTarget)
       if (animationFrameId !== null) window.cancelAnimationFrame(animationFrameId)
       if (timeoutId !== null) window.clearTimeout(timeoutId)
       window.history.scrollRestoration = previousScrollRestoration

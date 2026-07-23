@@ -64,7 +64,7 @@ function needsHumanApproval(scenario: AgentLabScenarioContent, policy: AgentLabP
 function approvalStep(decision: AgentLabDecision): AgentLabStep {
   if (decision === 'approved') {
     return {
-      detail: 'The synthetic owner accepted the proposed action and its attached evidence.',
+      detail: 'The workflow owner accepted the proposed action and its attached evidence.',
       evidence: 'Reviewer identity, decision, and accepted action recorded.',
       kind: 'approval',
       label: 'Human approval recorded',
@@ -72,15 +72,15 @@ function approvalStep(decision: AgentLabDecision): AgentLabStep {
   }
   if (decision === 'exception') {
     return {
-      detail: 'The synthetic owner rejected the action and sent the run to exception handling.',
+      detail: 'The workflow owner rejected the action and sent the run to exception handling.',
       evidence: 'Reviewer identity, rejection reason, and exception owner recorded.',
       kind: 'approval',
       label: 'Human exception recorded',
     }
   }
   return {
-    detail: 'Choose approval or exception routing before this walkthrough can continue.',
-    evidence: 'No decision recorded. The synthetic write remains blocked.',
+    detail: 'Choose approval or exception routing before the run continues.',
+    evidence: 'No decision recorded. The write remains blocked.',
     kind: 'approval',
     label: 'Human approval required',
   }
@@ -90,9 +90,8 @@ function policyStep(
   scenario: AgentLabScenarioContent,
   approvalRequired: boolean,
 ): AgentLabStep {
-  const confidence = scenario.risk === 'low' ? 'high' : 'mixed'
   return {
-    detail: `Synthetic confidence is ${confidence}. ${scenario.riskReason}`,
+    detail: scenario.riskReason,
     evidence: approvalRequired
       ? 'Policy result: pause for the named owner.'
       : 'Policy result: continue within the low-risk internal boundary.',
@@ -108,7 +107,7 @@ function writeStep(
 ): AgentLabStep {
   if (decision === 'exception') {
     return {
-      detail: 'The source context and rejected proposal move to the synthetic exception queue.',
+      detail: 'The source context and rejected proposal move to the exception queue.',
       evidence: 'No system write. Exception route and owner recorded.',
       kind: 'write',
       label: 'Exception routed',
@@ -117,10 +116,10 @@ function writeStep(
   return {
     detail: scenario.write,
     evidence: approvalRequired
-      ? 'Approved synthetic action plus before-and-after record captured.'
-      : 'Policy-cleared synthetic internal output captured.',
+      ? 'Approved action plus before-and-after record captured.'
+      : 'Policy-cleared internal output captured.',
     kind: 'write',
-    label: approvalRequired && decision === null ? 'Write held' : 'Synthetic action recorded',
+    label: approvalRequired && decision === null ? 'Write held' : 'Action recorded',
   }
 }
 
@@ -133,13 +132,13 @@ export function buildAgentLabRun(
   const steps: AgentLabStep[] = [
     {
       detail: scenario.trigger,
-      evidence: 'Synthetic event source and workflow owner identified.',
+      evidence: 'Event source and workflow owner identified.',
       kind: 'trigger',
       label: 'Trigger received',
     },
     {
       detail: scenario.reads.join(' • '),
-      evidence: 'Read scope limited to the listed synthetic records and policy.',
+      evidence: 'Read scope limited to the listed sample records and policy.',
       kind: 'context',
       label: 'Context and records read',
     },

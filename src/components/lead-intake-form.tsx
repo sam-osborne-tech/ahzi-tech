@@ -312,7 +312,7 @@ function statusMessage(submissionState: SubmissionState) {
     return 'Review the highlighted fields, then prepare the request again.'
   }
   if (submissionState === 'blocked') {
-    return 'The email draft could not be prepared. Use the form controls, then try again.'
+    return 'The email draft did not open. Use the form controls, then try again.'
   }
   if (submissionState === 'prepared') {
     return 'Your email draft is ready. Send it to complete the workflow review request.'
